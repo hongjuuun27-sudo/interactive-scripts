@@ -9,7 +9,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="스크립트">
-<link rel="icon" href="data:," id="favicon">
+<link rel="manifest" href="../manifest.webmanifest"><link rel="apple-touch-icon" href="../icons/apple-touch-icon.png"><link rel="icon" href="../icons/favicon-32.png" sizes="32x32">
 <title>스크립트</title>
 <script>
 // Apply theme + text size before first paint (app-wide prefs).
@@ -1411,16 +1411,13 @@ $('mineList').addEventListener('click', function (e) {
 });
 
 // ---------- installable web app (shared manifest + service worker at the site root) ----------
-// Only on the published site layout (<root>/<id>/index.html): a single local folder or file:// gets no links and no 404 noise.
-var SITE = /^https?:$/.test(location.protocol) && location.pathname.indexOf('/' + D.id + '/') >= 0;
+// publish.py fills the <!--__PWA__--> slot with ../manifest + ../icons links when it copies the page into the site.
+// No manifest link (a single local folder, file://) -> no service worker, no install UI, no 404 noise.
+var SITE = /^https?:$/.test(location.protocol) && !!document.querySelector('link[rel="manifest"]');
 var mqStandalone = matchMedia('(display-mode: standalone)');
 var standalone = mqStandalone.matches || navigator.standalone === true, installed = false, deferredPrompt = null;
 if (SITE) {
   app.classList.add('site');
-  [['manifest', '../manifest.webmanifest'], ['apple-touch-icon', '../icons/apple-touch-icon.png']].forEach(function (x) {
-    var l = document.createElement('link'); l.rel = x[0]; l.href = x[1]; document.head.appendChild(l);
-  });
-  $('favicon').href = '../icons/icon-192.png';
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(function () {});
 }
 function updInstall() { $('rInstall').hidden = !SITE || standalone || installed; }
