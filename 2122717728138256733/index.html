@@ -14,10 +14,11 @@
 <script>
 // Apply theme + text size before first paint (app-wide prefs).
 (function () {
-  var p = {}; try { p = JSON.parse(localStorage.getItem('ks:prefs') || '{}'); } catch (e) {}
-  var th = p.theme || 'system', d = document.documentElement;
-  var dark = th === 'dark' || (th === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
-  d.classList.toggle('dark', dark); d.dataset.size = p.font || 'm';
+  var p = null; try { p = JSON.parse(localStorage.getItem('ks:prefs') || '{}'); } catch (e) {}
+  if (!p || typeof p !== 'object') p = {};
+  var th = p.theme, d = document.documentElement;
+  var dark = th === 'dark' || (th !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+  d.classList.toggle('dark', dark); d.dataset.size = /^[sml]$/.test(p.font) ? p.font : 'm';
 })();
 </script>
 <style>
@@ -115,10 +116,12 @@ svg.i { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.
 #bAa svg { width:20px; height:20px; }
 #vbox.playing #bAa:not(:focus-visible) { opacity:0; pointer-events:none; }
 #verr { background:var(--video-bg); gap:0; }
+.failed #vload { transition:none; }  /* no crossfade of the loading title under the error card */
 #verr svg { width:28px; height:28px; color:var(--accent); }
 #verr .t { font-size:17px; line-height:24px; font-weight:700; margin-top:8px; text-wrap:balance; }
 #verr .b { font-size:14px; line-height:21px; color:#BDB3A6; margin-top:4px; max-width:320px; text-wrap:balance; }
 #verr .b code { font-family:inherit; color:#F3EDE4; font-weight:600; }
+#verr button[hidden] { display:none; }
 #verr button { margin-top:14px; height:44px; padding:0 20px; border-radius:999px; background:var(--accent); color:var(--on-accent);
   font-size:14px; line-height:20px; font-weight:600; transition:transform 160ms ease-out; }
 #verr button:active { transform:scale(.97); transition-duration:60ms; }
@@ -326,7 +329,7 @@ svg.i { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.
 .sheet { position:fixed; left:0; right:0; bottom:0; z-index:11; background:var(--surface); border-radius:20px 20px 0 0;
   padding:8px 20px calc(var(--safe-b) + 12px); box-shadow:0 -12px 40px var(--sh);
   transform:translateY(105%); visibility:hidden; transition:transform 200ms ease-in, visibility 0s 200ms; touch-action:pan-y; max-width:560px; margin:0 auto;
-  max-height:calc(100dvh - 12px - env(safe-area-inset-top)); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
+  max-height:calc(100dvh - 48px - env(safe-area-inset-top));  /* a tappable strip of scrim always stays above a tall sheet */ overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
 .sheet::-webkit-scrollbar { display:none; }
 .sheet.fit, .sheet .handle, .sheet h2 { touch-action:none; }
 .handle { position:relative; }
@@ -345,7 +348,7 @@ svg.i { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.
 .speeds button[aria-checked="true"] { background:var(--ink); color:var(--bg); }
 .speedcap { display:flex; justify-content:space-between; margin-top:8px; padding:0 4px; font-size:12px; line-height:16px; font-weight:500; color:var(--ink-3); }
 #segFont button { height:64px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; }
-#segFont .smp { line-height:1.2; font-weight:400; color:var(--ink); }
+#segFont .smp { line-height:1.2; font-weight:400; color:var(--ink); white-space:nowrap; }
 #segFont .smp .e { font-family:var(--font-en); }
 #segFont .smp .k { font-family:var(--font-ko); }
 #segFont .lb { font-size:11px; line-height:14px; font-weight:500; color:var(--ink-3); }
@@ -434,10 +437,31 @@ svg.i { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.
   #mid { border-left:1px solid var(--line); margin-right:env(safe-area-inset-right); }
   #list { padding-top:max(10px, env(safe-area-inset-top)); }
   #dock { padding:4px 14px max(6px, env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left)); box-shadow:0 -1px 0 var(--line); }
-  #ctl { height:40px; margin-bottom:2px; }
-  #ctl .chip { height:40px; } #ctl .seg button { height:36px; }
+  #ctl { height:44px; margin-bottom:2px; }
+  #ctl .chip { height:44px; } #ctl .seg button { height:40px; }
   #bar { height:56px; }
   .sheet { max-width:520px; }
+}
+
+/* narrow viewports = large page zoom / Android font scaling (130 % -> 317 px, 200 % -> 206 px wide): the dock shrinks, nothing overlaps */
+@media (max-width: 360px), (orientation: landscape) and (min-aspect-ratio: 13/10) and (max-width: 640px) {
+  #dock { padding-left:8px; padding-right:8px; }
+  #ctl { gap:6px; }
+  #cSpeed { width:56px; padding:0 4px; }
+  .seg button { font-size:13px; letter-spacing:-0.02em; }
+  .tg { width:100%; max-width:72px; }
+  .tg .lb { max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+}
+@media (max-width: 300px) {
+  #dock { padding-left:4px; padding-right:4px; }
+  #ctl { gap:4px; }
+  #cSpeed { width:46px; font-size:13px; }
+  .seg { gap:0; }
+  .seg button { font-size:12px; letter-spacing:-0.04em; padding:0 1px; }
+  .tb:not(#bPlay) { width:100%; max-width:48px; }
+  .tb:not(#bPlay) svg.i { left:50% !important; margin-left:-12px; }
+  .tg .lb { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+  .nt { padding:6px 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -461,14 +485,15 @@ svg.i { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.
   <section id="stage">
     <div id="vbox">
       <video id="v" playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback></video>
-      <div id="vload" class="vlayer show"><div class="t" id="ttl"></div><div class="st" id="sttl"></div><div class="cap">영상 불러오는 중</div><div class="shim"></div></div>
+      <div id="vload" class="vlayer show"><div class="t" id="ttl"></div><div class="st" id="sttl"></div><div class="cap" id="vcap">영상 불러오는 중</div><div class="shim"></div></div>
       <div id="vbuf" class="vlayer"><div class="disc"><div class="spin"></div></div></div>
       <div id="vpause" class="vlayer"><div class="disc"><svg class="i" viewBox="0 0 24 24"><use href="#ic-play" id="vpUse"/></svg></div></div>
       <div id="verr" class="vlayer" role="alert">
         <svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 3l18 18"/></svg>
-        <div class="t">영상 파일을 찾을 수 없어요</div>
-        <div class="b">같은 폴더에 <code id="vname">video.mp4</code>가 있어야 해요</div>
+        <div class="t" id="errT">영상 파일을 찾을 수 없어요</div>
+        <div class="b" id="errB">같은 폴더에 <code id="vname">video.mp4</code>가 있어야 해요</div>
         <button type="button" id="pick">영상 직접 선택</button>
+        <button type="button" id="retry" hidden>다시 시도</button>
         <input type="file" id="file" accept="video/*" hidden>
       </div>
       <a id="bHome" href="../" aria-label="목록으로"><svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>
@@ -610,18 +635,24 @@ var BAND = (typeof D.captionBand === 'number' && D.captionBand > 0.3 && D.captio
 var KEY = 'ks:' + D.id;
 function readJSON(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
 function writeJSON(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
-var saved = readJSON(KEY) || {};
-var prefs = readJSON('ks:prefs') || {};
+// stored state is untrusted (old versions, other tabs, manual edits): every field is validated; boot's save() writes it back repaired
+function obj(v) { return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; }
+function isIdx(i) { return typeof i === 'number' && i % 1 === 0 && i >= 0 && i < N; }
+var saved = obj(readJSON(KEY));
+var prefs = obj(readJSON('ks:prefs'));
+saved.t = typeof saved.t === 'number' && isFinite(saved.t) && saved.t > 0 ? saved.t : 0;
 var st = {
   speed: SPEEDS.indexOf(saved.speed) >= 0 ? saved.speed : 1,
   hide: [0, 1, 2].indexOf(saved.hide) >= 0 ? saved.hide : 0,
-  stars: new Set(Array.isArray(saved.stars) ? saved.stars.filter(function (i) { return i >= 0 && i < N; }) : []),
+  stars: new Set(Array.isArray(saved.stars) ? saved.stars.slice(0, 5000).filter(isIdx) : []),
   crop: saved.crop !== false,
-  font: prefs.font || 'm', theme: prefs.theme || 'system', hinted: !!prefs.hinted, instHinted: !!prefs.instHinted,
+  font: ['s', 'm', 'l'].indexOf(prefs.font) >= 0 ? prefs.font : 'm',
+  theme: ['system', 'light', 'dark'].indexOf(prefs.theme) >= 0 ? prefs.theme : 'system',
+  hinted: !!prefs.hinted, instHinted: !!prefs.instHinted,
   // play mode (app-wide): what happens at the end of each sentence
   mode: ['cont', 'stop', 'shadow'].indexOf(prefs.mode) >= 0 ? prefs.mode : 'cont',
   // saved key expressions ("i:j" = sentence i, note j), newest first
-  mine: Array.isArray(saved.mine) ? saved.mine.filter(function (k) { return typeof k === 'string'; }) : []
+  mine: Array.isArray(saved.mine) ? saved.mine.slice(0, 5000).filter(function (k) { return typeof k === 'string' && k.length < 16; }) : []
 };
 var lastSave = 0;
 function save() {
@@ -696,7 +727,7 @@ for (var i = 0; i < N; i++) {
   for (var i = 0; i < N; i++) {
     var s = SENT[i], ww = s.w || [], ns = NOTES[i], nj = 0;
     var gap = i > 0 && S[i] - E[i - 1] > 1.5;
-    h.push('<div class="row', gap ? ' gap' : '', '" data-i="', i, '" role="button" tabindex="-1" aria-label="', esc(s.en || ''), '">');
+    h.push('<div class="row', gap ? ' gap' : '', '" data-i="', i, '" role="listitem">');
     if (gap) h.push('<span class="gd" aria-hidden="true">· · ·</span>');
     h.push('<div class="meta"><span class="ts" aria-hidden="true">', fmt(S[i]), '</span>');
     if (s.spk) {
@@ -706,10 +737,10 @@ for (var i = 0; i < N; i++) {
     }
     prevSpk = s.spk || null;
     h.push('<span class="mr"><span class="lp">↻ 반복</span><span class="st">', STAR_SVG, '</span></span></div>');
-    h.push('<p class="en" lang="en" aria-hidden="true">');
+    h.push('<p class="en" lang="en">');
     for (var k = 0; k < ww.length; k++) {
       if (k) h.push(' ');
-      if (nj < ns.length && k === ns[nj].a) h.push('<span class="nt" data-n="', nj, '">');
+      if (nj < ns.length && k === ns[nj].a) h.push('<span class="nt" data-n="', nj, '" role="button" aria-haspopup="dialog">');
       h.push('<span class="w">', esc(ww[k][0]), '</span>');
       if (nj < ns.length && k === ns[nj].b) { h.push('</span>'); nj++; }
     }
@@ -852,17 +883,22 @@ list.addEventListener('wheel', function () { lastListTouch = performance.now(); 
 pill.addEventListener('click', function () { resumeFollow(false); });
 
 // ---------- toast (star, loop-cancel, resume, errors only) ----------
-var toastEl = $('toast'), toastMsg = $('toastMsg'), toastAct = $('toastAct'), toastTimer = 0, toastFn = null;
-function toast(msg, action, fn) {
+var toastEl = $('toast'), toastMsg = $('toastMsg'), toastAct = $('toastAct'), toastTimer = 0, toastFn = null, toastAt = 0, toastDown = 0;
+function toast(msg, action, fn, ms) {
   clearTimeout(toastTimer);
   toastMsg.textContent = msg;
-  toastFn = fn || null;
+  toastFn = fn || null; toastAt = performance.now();
   if (action) { toastAct.textContent = action; toastAct.hidden = false; } else toastAct.hidden = true;
   toastEl.classList.add('show');
-  toastTimer = setTimeout(hideToast, action ? 5000 : 1800);
+  toastTimer = setTimeout(hideToast, ms || (action ? 5000 : 1800));
 }
-function hideToast() { clearTimeout(toastTimer); toastEl.classList.remove('show'); }
-toastAct.addEventListener('click', function () { var f = toastFn; hideToast(); if (f) f(); });
+function hideToast() { clearTimeout(toastTimer); toastEl.classList.remove('show'); toastFn = null; }
+// an action only counts when its press started after the toast appeared (no ghost click from the tap that caused it)
+toastAct.addEventListener('pointerdown', function () { toastDown = performance.now(); });
+toastAct.addEventListener('click', function (e) {
+  if (e.detail && toastDown < toastAt + 80) return;
+  var f = toastFn; hideToast(); if (f) f();
+});
 
 // ---------- first-run coach line (replaces the hint toast) ----------
 var coachEl = null, coachTimer = 0, playAcc = 0, lastFrameAt = 0;
@@ -879,6 +915,7 @@ function dismissCoach() { clearTimeout(coachTimer); if (coachEl) { coachEl.remov
 
 // ---------- video state ----------
 var videoOK = false, failed = false, ended = false, bufTimer = 0, metaTimer = 0, scrubbing = false, buffering = false, wantPlay = false;
+var videoSrc = '', localFile = false, gotBytes = false, errHTML = $('errB').innerHTML;
 function setLayer(id, on) { $(id).classList.toggle('show', on); }
 function updChrome() {
   var playing = videoOK && !video.paused && !waiting;
@@ -886,21 +923,61 @@ function updChrome() {
   $('vpUse').setAttribute('href', ended ? '#ic-replay' : '#ic-play');
   setLayer('vpause', videoOK && !playing && !waiting && !buffering);
 }
-function loadVideo(src) {
-  videoOK = false; failed = false; app.classList.remove('failed');
-  setLayer('verr', false); setLayer('vload', true);
-  clearTimeout(metaTimer);
-  metaTimer = setTimeout(function () { if (!videoOK) videoError(); }, 10000);
+function loadVideo(src, local) {
+  videoOK = false; failed = false; app.classList.remove('failed'); videoSrc = src; localFile = !!local; gotBytes = false;
+  setLayer('verr', false); setLayer('vload', true); $('vcap').textContent = '영상 불러오는 중';
+  armMeta();
   video.src = src;
   video.load();
   setPlayIcon(); updChrome();
 }
-function videoError() {
+// no bytes at all for 10 s -> error card; bytes trickling in (slow network) -> keep waiting, say so
+function armMeta() {
+  clearTimeout(metaTimer);
+  metaTimer = setTimeout(function () {
+    if (videoOK || failed) return;
+    if (gotBytes && navigator.onLine !== false) { gotBytes = false; $('vcap').textContent = '연결이 느려요 · 계속 불러오는 중'; armMeta(); }
+    else videoError(navigator.onLine === false ? 'offline' : 'timeout');
+  }, 10000);
+}
+video.addEventListener('progress', function () { gotBytes = true; });
+// why did the video fail? A media error does not say (offline and 404 both give code 4), and navigator.onLine is often wrong:
+// probe the file itself. Network failure -> 'offline' (retried automatically), HTTP error -> 'missing'.
+var probeTimer = 0, probing = false;
+function probe(cb) {
+  if (localFile || !/^https?:/.test(location.protocol) || !window.fetch) { cb('missing'); return; }
+  var done = false, fin = function (k) { if (!done) { done = true; cb(k); } };
+  setTimeout(function () { fin('timeout'); }, 5000);
+  fetch(videoSrc, { headers: { Range: 'bytes=0-1' }, cache: 'no-store' })
+    .then(function (r) { fin(r.ok ? 'timeout' : 'missing'); }, function () { fin('offline'); });
+}
+function watchNet() {  // while the card says offline / can't load: try again every 5 s
+  clearTimeout(probeTimer);
+  probeTimer = setTimeout(function () {
+    if (!failed || localFile || probing) return;
+    probing = true;
+    probe(function (k) { probing = false; if (!failed) return; if (k === 'timeout' && $('retry').hidden === false) retryVideo(); else if (k !== 'missing') watchNet(); });
+  }, 5000);
+}
+function videoError(kind) {
+  if (!kind) {
+    if (localFile) kind = 'missing';
+    else if (navigator.onLine === false) kind = 'offline';
+    else { clearTimeout(metaTimer); probe(function (k) { if (!videoOK) videoError(k); }); return; }
+  }
   clearTimeout(metaTimer); videoOK = false; failed = true; wantPlay = false; bPlay.classList.remove('queued'); app.classList.add('failed');
   setLayer('vload', false); clearBuf(); setLayer('verr', true);
+  var net = kind !== 'missing';
+  $('errT').textContent = kind === 'offline' ? '오프라인이에요' : kind === 'timeout' ? '영상을 불러오지 못했어요' : '영상 파일을 찾을 수 없어요';
+  if (net) $('errB').textContent = kind === 'offline' ? '인터넷에 연결되면 영상을 다시 불러와요. 스크립트는 그대로 볼 수 있어요.' : '연결이 느리거나 끊겼어요. 잠시 후 다시 시도해 주세요.';
+  else $('errB').innerHTML = errHTML;
+  $('retry').hidden = !net; $('pick').hidden = net;
+  if (net) watchNet();
   setPlayIcon(); updChrome();
 }
+function retryVideo() { if (videoSrc && !videoOK) loadVideo(videoSrc, localFile); }
 video.addEventListener('error', function () { if (video.error) videoError(); });
+window.addEventListener('online', function () { if (failed && !localFile) retryVideo(); });
 video.addEventListener('loadedmetadata', function () {
   clearTimeout(metaTimer);
   videoOK = true; failed = false; app.classList.remove('failed');
@@ -927,16 +1004,20 @@ function clearBuf() { clearTimeout(bufTimer); if (!buffering) return; buffering 
 video.addEventListener('play', function () { if (held) clearHold(); ended = false; showEnd(false); setPlayIcon(); updChrome(); lastFrameAt = 0; startLoop(); });
 video.addEventListener('pause', function () { clip = null; setPlayIcon(); updChrome(); save(); tick(true); });
 video.addEventListener('ended', function () { ended = true; setPlayIcon(); updChrome(); tick(true); showEnd(true); });
-video.addEventListener('seeked', function () { if (video.paused) tick(true); });
+video.addEventListener('seeked', function () {
+  // scrubbed / seeked onto the very end: Chrome sets .ended but fires no 'ended' event -> show the end state anyway
+  if (video.ended && !ended && N) { ended = true; setPlayIcon(); updChrome(); showEnd(true); }
+  if (video.paused) tick(true);
+});
 video.addEventListener('ratechange', function () { if (Math.abs(video.playbackRate - st.speed) > 1e-3) video.playbackRate = st.speed; });
 function setPlayIcon() {
-  var s = failed ? 'pick' : ended ? 'end' : (video.paused || !videoOK ? 'play' : 'pause');
+  var s = failed ? ($('retry').hidden ? 'pick' : 'play') : ended ? 'end' : (video.paused || !videoOK ? 'play' : 'pause');
   if (waiting || held) s = 'play';
   bPlay.dataset.s = s;
   bPlay.setAttribute('aria-label', s === 'pick' ? '영상 직접 선택' : (waiting || held) ? '다음 문장 재생' : s === 'end' ? '처음부터 재생' : s === 'pause' ? '일시정지' : '재생');
 }
 function play() {
-  if (failed) { $('file').click(); return; }
+  if (failed) { if (!$('retry').hidden) retryVideo(); else $('file').click(); return; }
   if (!videoOK) { wantPlay = true; bPlay.classList.add('queued'); return; }  // queued until metadata arrives
   if (ended) { video.currentTime = 0; ended = false; resync(0); }
   var p = video.play(); if (p && p.catch) p.catch(function () {});
@@ -1070,22 +1151,26 @@ vbox.addEventListener('click', function (e) {
 });
 
 // ---------- rows: tap / long-press ----------
+// Pointer events only drive the press feedback and the long-press timer; the action itself runs on `click`.
+// (On touch screens the compatibility click is dispatched after touchend at the tap point: acting on pointerup let that click
+// land on whatever had just appeared under the finger — e.g. the scrim of the note sheet, which then closed instantly.)
 (function rowGestures() {
-  var pr = null, pn = null, timer = 0, x0 = 0, y0 = 0, fired = false;
+  var pr = null, pn = null, timer = 0, x0 = 0, y0 = 0, firedAt = 0;
   function clear() { clearTimeout(timer); if (pr) pr.classList.remove('press'); if (pn) pn.classList.remove('press'); pr = pn = null; }
-  function noteTarget(e, r) {  // a marked chunk, only while its English is visible
-    var n = e.target.closest('.nt');
+  function noteTarget(t, r) {  // a marked chunk, only while its English is visible
+    var n = t.closest('.nt');
     return n && !(st.hide === 2 && !r.classList.contains('rv-en')) ? n : null;
   }
   list.addEventListener('pointerdown', function (e) {
     if (e.button > 0) return;
+    clear(); firedAt = 0;
     var r = e.target.closest('.row'); if (!r) return;
-    pr = r; fired = false; x0 = e.clientX; y0 = e.clientY;
-    pn = noteTarget(e, r);
+    pr = r; x0 = e.clientX; y0 = e.clientY;
+    pn = noteTarget(e.target, r);
     (pn || r).classList.add('press');
     timer = setTimeout(function () {
       if (!pr) return;
-      fired = true; var i = +pr.dataset.i; pr.classList.remove('press');
+      firedAt = performance.now(); var i = +pr.dataset.i; clear();
       toggleStar(i, true);
     }, 450);
   });
@@ -1093,22 +1178,43 @@ vbox.addEventListener('click', function (e) {
     if (pr && (Math.abs(e.clientX - x0) > 8 || Math.abs(e.clientY - y0) > 8)) clear();
   });
   list.addEventListener('pointercancel', clear);
+  list.addEventListener('pointerup', clear);
   list.addEventListener('pointerleave', clear);
-  list.addEventListener('pointerup', function (e) {
-    var r = pr, f = fired; clear();
-    if (!r || f) return;
+  function activate(t) {
+    var r = t.closest('.row'); if (!r) return;
     var i = +r.dataset.i;
-    if (e.target.closest('.st') && r.classList.contains('on')) { toggleStar(i, true); return; }
-    if (e.target.closest('.ts')) { dismissCoach(); if (failed) return; gotoSentence(i, true); return; }
-    var nt = noteTarget(e, r);
+    if (t.closest('.st') && r.classList.contains('on')) { toggleStar(i, true); return; }
+    if (t.closest('.ts')) { dismissCoach(); if (failed) return; gotoSentence(i, true); return; }
+    var nt = noteTarget(t, r);
     if (nt) { dismissCoach(); openNote(i, +nt.dataset.n); return; }
-    var en = e.target.closest('.en'), ko = e.target.closest('.ko');
+    var en = t.closest('.en'), ko = t.closest('.ko');
     if (en && st.hide === 2 && !r.classList.contains('rv-en')) { reveal(i, 'en'); return; }
     if (ko && st.hide === 1 && !r.classList.contains('rv-ko')) { reveal(i, 'ko'); return; }
     dismissCoach();
     if (failed) { toast('영상이 없어 재생할 수 없어요'); return; }
     cancelShadow(false);
     gotoSentence(i, true);
+  }
+  list.addEventListener('click', function (e) {
+    if (firedAt) { firedAt = 0; return; }  // the release of a long-press (star) is not a tap
+    if (openSheet) return;
+    activate(e.target);
+  });
+  // Key expressions are tab stops only for keyboard users. A focusable chunk is a touch-adjustment target: Chrome would snap a
+  // finger tap on a neighbouring plain word onto it (opening the note instead of playing the sentence).
+  var ntTab = false;
+  function setNtTab(on) {
+    if (on === ntTab) return; ntTab = on;
+    list.querySelectorAll('.nt').forEach(function (n) { if (on) n.tabIndex = 0; else if (n !== document.activeElement) n.removeAttribute('tabindex'); });
+  }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Tab') setNtTab(true); }, true);  // before the browser moves focus
+  document.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') setNtTab(false); }, true);
+  list.addEventListener('focusout', function (e) { if (!ntTab && e.target.classList && e.target.classList.contains('nt')) e.target.removeAttribute('tabindex'); });
+  // Enter / Space on a focused chunk opens the note
+  list.addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('nt')) {
+      e.preventDefault(); e.stopPropagation(); activate(e.target);
+    }
   });
   list.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 })();
@@ -1170,7 +1276,7 @@ function setMode(m, quiet) {
 $('cMode').addEventListener('click', function () { showSheet('shMode'); });
 document.querySelector('.modes').addEventListener('click', function (e) {
   var b = e.target.closest('button'); if (!b) return;
-  setMode(b.dataset.v); setTimeout(function () { closeSheet(false); }, 160);
+  setMode(b.dataset.v); setTimeout(function () { closeSheet(false, $('shMode')); }, 160);
 });
 // 한 문장씩 멈춤: stop exactly at the sentence end (rAF-checked), keep the last word shown, wait for 다음/▶
 function hold(i) {
@@ -1231,7 +1337,7 @@ function startWait(i) {
 function cancelShadow() {
   if (!waiting) return;
   if (waitI >= 0) rows[waitI].classList.remove('wait');
-  waiting = false; waitI = -1; lo = 1; hi = 0;
+  waiting = false; waitI = -1; lo = 1; hi = 0; waitFrozen = false;
   clearTimeout(waitTimer); clearInterval(numTimer);
   sayEl.remove(); cdBar.remove(); bPlay.querySelector('svg.cd').classList.remove('run');
   dock.classList.remove('waiting'); $('bPrev').setAttribute('aria-label', '이전 문장');
@@ -1265,32 +1371,53 @@ function setHide(m) {
 $('segHide').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) setHide(+b.dataset.v); });
 
 // ---------- sheets ----------
-var openSheet = null, lastFocus = null, kbd = false, kbdOpen = false;
+var openSheet = null, lastFocus = null, kbd = false, kbdOpen = false, sheetAt = 0, scrimDown = 0, popIgnore = 0;
 document.addEventListener('keydown', function () { kbd = true; }, true);
 document.addEventListener('pointerdown', function () { kbd = false; }, true);
+function sheetEntry() { return !!(history.state && history.state.sheet); }
+// a reload keeps history.state: a stale sheet entry would make the next Android back do nothing visible
+if (sheetEntry()) { try { history.replaceState(null, ''); } catch (e) {} }
+function fitSheet(sh) { sh.classList.toggle('fit', sh.scrollHeight <= sh.clientHeight + 1); }
 function showSheet(id) {
   var swap = !!openSheet;  // sheet -> sheet (e.g. 보기 설정 -> 내 표현 -> note) reuses the same history entry
   if (swap) openSheet.classList.remove('show');
-  else { lastFocus = document.activeElement; kbdOpen = kbd; }
+  else { lastFocus = document.activeElement; kbdOpen = kbd; sheetAt = performance.now(); }
   var sh = $(id); openSheet = sh;
-  sh.style.removeProperty('--dy'); sh.scrollTop = 0;
+  sh.style.removeProperty('--dy'); sh.classList.remove('dragging'); sh.scrollTop = 0;
   $('scrim').classList.add('show'); sh.classList.add('show');
-  sh.classList.toggle('fit', sh.scrollHeight <= sh.clientHeight + 1);
-  if (!swap) { try { history.pushState({ sheet: id }, ''); } catch (e) {} }
-  var f = kbdOpen ? (sh.querySelector('[aria-checked="true"]') || sh.querySelector('button')) : sh;
-  setTimeout(function () { if (f) f.focus({ preventScroll: true }); }, 30);
+  sh.classList.remove('fit'); fitSheet(sh);
+  // one history entry per open sheet (Android back closes it). While a close's history.back() is still in flight,
+  // the popstate handler re-adds the entry instead (pushing now would be undone by that back).
+  if (!swap && !popIgnore && !sheetEntry()) { try { history.pushState({ sheet: 1 }, ''); } catch (e) {} }
+  var f = kbdOpen ? (sh.querySelector('[aria-checked="true"]') || sh.querySelector('button:not([hidden])')) : sh;
+  setTimeout(function () { if (f && openSheet === sh) f.focus({ preventScroll: true }); }, 30);
 }
-function closeSheet(fromPop) {
-  if (!openSheet) return;
-  openSheet.classList.remove('show'); $('scrim').classList.remove('show');
+function closeSheet(fromPop, only) {
+  if (!openSheet || (only && openSheet !== only)) return;
+  openSheet.classList.remove('show', 'dragging'); openSheet.style.removeProperty('--dy'); $('scrim').classList.remove('show');
   openSheet = null;
-  if (!fromPop) { try { if (history.state && history.state.sheet) history.back(); } catch (e) {} }
+  if (!fromPop && sheetEntry()) { try { popIgnore++; history.back(); } catch (e) { popIgnore = 0; } }
   // restore focus only for keyboard users (a touch-opened sheet must not leave a ring on its opener)
-  if (kbdOpen && lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+  if (kbdOpen && lastFocus && lastFocus.focus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
   else if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  if (swNew) setTimeout(function () { if (!openSheet) offerUpdate(); }, 400);
 }
-window.addEventListener('popstate', function () { if (openSheet) closeSheet(true); });
-$('scrim').addEventListener('click', function () { closeSheet(false); });
+window.addEventListener('popstate', function () {
+  if (popIgnore) {  // our own history.back() from closeSheet
+    popIgnore--;
+    if (openSheet && !popIgnore && !sheetEntry()) { try { history.pushState({ sheet: 1 }, ''); } catch (e) {} }
+    return;
+  }
+  if (openSheet) closeSheet(true);
+});
+// the scrim closes only on a tap that started on it after the sheet was up (never on the ghost click of the opening tap)
+$('scrim').addEventListener('pointerdown', function () { scrimDown = performance.now(); });
+$('scrim').addEventListener('click', function () {
+  var ok = scrimDown > sheetAt + 350 && performance.now() - scrimDown < 1500;
+  scrimDown = 0;
+  if (ok) closeSheet(false);
+});
+window.addEventListener('resize', function () { if (openSheet) { openSheet.classList.remove('fit'); fitSheet(openSheet); } });
 document.querySelectorAll('.sheet').forEach(function (sh) {
   var y0 = 0, dy = 0, drag = false, id = -1;
   sh.addEventListener('pointerdown', function (e) {
@@ -1319,7 +1446,7 @@ function setSpeed(v) {
 }
 speedsEl.addEventListener('click', function (e) {
   var b = e.target.closest('button'); if (!b) return;
-  setSpeed(+b.dataset.v); setTimeout(function () { closeSheet(false); }, 160);
+  setSpeed(+b.dataset.v); setTimeout(function () { closeSheet(false, $('shSpeed')); }, 160);
 });
 $('cSpeed').addEventListener('click', function () { showSheet('shSpeed'); });
 // display
@@ -1352,7 +1479,7 @@ $('bAa').addEventListener('click', function (e) { e.stopPropagation(); showSheet
 // ---------- key expressions (핵심 표현) ----------
 var TYPE_KO = { phrasal: '구동사', idiom: '관용 표현', collocation: '단어 짝꿍', discourse: '말하기 표현', vocab: '어휘', term: '용어' };
 var noteCur = null;
-function noteOf(k) { var p = String(k).split(':'), i = +p[0], j = +p[1]; return (i >= 0 && i < N && NOTES[i][j]) ? { i: i, j: j, n: NOTES[i][j] } : null; }
+function noteOf(k) { var m = /^(\d+):(\d)$/.exec(String(k)), i = m ? +m[1] : -1, j = m ? +m[2] : -1; return (isIdx(i) && NOTES[i][j]) ? { i: i, j: j, n: NOTES[i][j] } : null; }
 function chunkText(i, n) { return n.text || Array.prototype.map.call(WSPAN[i], function (x) { return x.textContent; }).slice(n.a, n.b + 1).join(' '); }
 function setSec(id, txt) { var el = $(id); el.hidden = !txt; if (txt) el.querySelector('p').textContent = txt; }
 function openNote(i, j) {
@@ -1384,7 +1511,7 @@ function markSaved() {
   st.mine.forEach(function (k) { var o = noteOf(k); if (o) { var el = rows[o.i].querySelector('.nt[data-n="' + o.j + '"]'); if (el) el.classList.add('sv'); } });
   $('mineCnt').textContent = st.mine.length;
 }
-st.mine = st.mine.filter(function (k, x, arr) { return noteOf(k) && arr.indexOf(k) === x; });
+st.mine = (function (seen) { return st.mine.filter(function (k) { if (seen[k] || !noteOf(k)) return false; seen[k] = 1; return true; }); })(Object.create(null));
 $('nPlay').addEventListener('click', function () { if (noteCur) { var n = NOTES[noteCur[0]][noteCur[1]]; playClip(noteCur[0], n.a, n.b); } });
 $('nFrom').addEventListener('click', function () { if (!noteCur) return; var i = noteCur[0]; closeSheet(false); gotoSentence(i, true); });
 $('nSave').addEventListener('click', function () {
@@ -1419,9 +1546,38 @@ $('mineList').addEventListener('click', function (e) {
 var SITE = /^https?:$/.test(location.protocol) && !!document.querySelector('link[rel="manifest"]');
 var mqStandalone = matchMedia('(display-mode: standalone)');
 var standalone = mqStandalone.matches || navigator.standalone === true, installed = false, deferredPrompt = null;
+// Updates: sw.js changes on every publish; the new worker activates at once (skipWaiting + claim) -> controllerchange.
+// The page then offers a reload (toast) and never reloads by itself mid-playback / with a sheet open / twice in a row.
+var swReg = null, swNew = false, swChecked = 0;
 if (SITE) {
   app.classList.add('site');
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(function () {});
+  if ('serviceWorker' in navigator) {
+    var swHad = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.register('../sw.js', { scope: '../' }).then(function (r) { swReg = r; swChecked = performance.now(); }).catch(function () {});
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (!swHad) { swHad = true; cacheSelf(); return; }  // first install, not an update
+      swNew = true; offerUpdate();
+    });
+  }
+}
+// the first visit is loaded before the worker controls the page: put this page into the offline cache explicitly
+function cacheSelf() { try { fetch(location.href, { headers: { Accept: 'text/html' }, credentials: 'same-origin' }).catch(function () {}); } catch (e) {} }
+function swCheck() {
+  if (swReg && performance.now() - swChecked > 5000) { swChecked = performance.now(); swReg.update().catch(function () {}); }
+  if (swNew && !document.hidden) offerUpdate(true);
+}
+function idle() { return video.paused && !openSheet && !waiting && !held && !scrubbing && !clip && !wantPlay; }
+function swReload() {
+  try { sessionStorage.setItem('ks:swr', Date.now()); } catch (e) {}
+  save(); location.reload();
+}
+function offerUpdate(back) {
+  if (!swNew) return;
+  var last = 0; try { last = +sessionStorage.getItem('ks:swr') || 0; } catch (e) {}
+  // returning to an idle app: reload quietly (state + position are saved); never twice within a minute
+  if (back && idle() && Date.now() - last > 60000) { swReload(); return; }
+  if (openSheet) return;  // offered again when the sheet closes
+  toast('새 버전이 있어요', '새로고침', swReload, 10000);
 }
 function updInstall() { $('rInstall').hidden = !SITE || standalone || installed; }
 window.addEventListener('beforeinstallprompt', function (e) {
@@ -1459,7 +1615,8 @@ function relayout() {
   if (relayoutQueued) return; relayoutQueued = true;
   requestAnimationFrame(function () {
     relayoutQueued = false; measure();
-    if (follow && !tween) scrollToActive(true); else if (!follow) checkPill();
+    // a running scroll tween aims at pre-resize coordinates (rotation, font change): re-anchor instead of letting it finish
+    if (follow) { cancelTween(); scrollToActive(true); } else checkPill();
   });
 }
 if (window.ResizeObserver) new ResizeObserver(function () { relayout(); }).observe(list);
@@ -1518,12 +1675,25 @@ document.addEventListener('keydown', function (e) {
 });
 
 // ---------- lifecycle ----------
-document.addEventListener('visibilitychange', function () { if (document.hidden) save(); });
+// backgrounded during a shadowing wait: freeze the countdown (it must not start playback while the app is hidden);
+// back in front: run the full wait again. rAF does not run while hidden, so timeupdate keeps the stop/shadow/loop checks alive.
+var waitFrozen = false;
+document.addEventListener('visibilitychange', function () {
+  if (document.hidden) {
+    save();
+    if (waiting) { clearTimeout(waitTimer); clearInterval(numTimer); waitFrozen = true; }
+  } else {
+    if (waiting && waitFrozen) { waitFrozen = false; startWait(waitI); }
+    swCheck();
+  }
+});
 window.addEventListener('pagehide', save);
+video.addEventListener('timeupdate', function () { if (document.hidden && !video.paused) tick(false); });
 $('pick').addEventListener('click', function (e) { e.stopPropagation(); $('file').click(); });
+$('retry').addEventListener('click', function (e) { e.stopPropagation(); retryVideo(); });
 $('file').addEventListener('change', function () {
   var f = this.files && this.files[0]; if (!f) return;
-  loadVideo(URL.createObjectURL(f));
+  loadVideo(URL.createObjectURL(f), true);
 });
 
 // ---------- boot ----------
@@ -1533,7 +1703,7 @@ measure();
 if (pendingResume) { resync(pendingResume); drawSeek(pendingResume, true); scrollToActive(true); }
 else { resync(0); if (N) rows[0].classList.toggle('pre', ai < 0); }
 loadVideo(D.video || 'video.mp4');
-save();
+savePrefs();  // writes both stores back validated (repairs anything corrupt)
 
 window.__karaoke = Object.freeze({
   data: D,

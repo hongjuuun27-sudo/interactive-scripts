@@ -15,9 +15,10 @@
 <script>
 // same app-wide prefs as the video pages (ks:prefs.theme = system | light | dark)
 (function () {
-  var p = {}; try { p = JSON.parse(localStorage.getItem('ks:prefs') || '{}'); } catch (e) {}
-  var th = p.theme || 'system';
-  var dark = th === 'dark' || (th === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+  var p = null; try { p = JSON.parse(localStorage.getItem('ks:prefs') || '{}'); } catch (e) {}
+  if (!p || typeof p !== 'object') p = {};
+  var th = p.theme;
+  var dark = th === 'dark' || (th !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
   document.documentElement.classList.toggle('dark', dark);
   if (dark) document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1C1A17');
 })();
@@ -80,6 +81,7 @@ footer { margin:28px 2px 0; font-size:12px; line-height:18px; color:var(--ink-3)
   transition:transform 200ms ease-in, visibility 0s 200ms; }
 .sheet.show { transform:none; visibility:visible; transition:transform 260ms cubic-bezier(.32,.72,0,1); }
 .handle { width:36px; height:4px; border-radius:2px; background:var(--line); margin:0 auto 14px; }
+.sheet:focus { outline:none; }
 .sheet h2 { margin:0 0 12px; font-size:17px; line-height:24px; font-weight:700; }
 .steps { margin:0; padding:0; list-style:none; counter-reset:st; }
 .steps li { position:relative; padding:8px 0 8px 36px; font-size:15px; line-height:22px; color:var(--ink-2); counter-increment:st; }
@@ -99,12 +101,12 @@ footer { margin:28px 2px 0; font-size:12px; line-height:18px; color:var(--ink-3)
   </header>
   <div class="count">영상 1개</div>
   <div class="cards">
-    <a class="card" href="./2122717728138256733/" data-id="2122717728138256733" data-dur="829.742"><div class="th"><img src="./2122717728138256733/thumb.jpg" alt="" loading="lazy"><span class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.6v12.8a1 1 0 0 0 1.52.85l10.2-6.4a1 1 0 0 0 0-1.7L9.52 4.75A1 1 0 0 0 8 5.6z"/></svg></span><span class="dur">13:49</span></div><div class="bd"><div class="t">다리오 아모데이 × 데미스 하사비스</div><div class="s">AGI는 언제 오고, 무엇이 위험한가</div><div class="m"><span>194문장</span><span>다리오, 데미스, 재니</span><span>핵심 표현 188개</span><span>2026-11-19</span></div><div class="pg"><span></span><div class="bar"><i></i></div></div></div></a>
+    <a class="card" href="./2122717728138256733/" data-id="2122717728138256733" data-key="2122717353209397248" data-dur="829.742"><div class="th"><img src="./2122717728138256733/thumb.jpg" alt="" loading="lazy"><span class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.6v12.8a1 1 0 0 0 1.52.85l10.2-6.4a1 1 0 0 0 0-1.7L9.52 4.75A1 1 0 0 0 8 5.6z"/></svg></span><span class="dur">13:49</span></div><div class="bd"><div class="t">다리오 아모데이 × 데미스 하사비스</div><div class="s">AGI는 언제 오고, 무엇이 위험한가</div><div class="m"><span>194문장</span><span>다리오, 데미스, 재니</span><span>핵심 표현 188개</span><span>2026-11-19</span></div><div class="pg"><span></span><div class="bar"><i></i></div></div></div></a>
   </div>
   <footer>문장을 누르면 거기서부터 들려줘요 · 점선 밑줄은 핵심 표현이에요</footer>
 </main>
 <div id="scrim"></div>
-<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="hI"><div class="handle"></div><h2 id="hI">홈 화면에 추가하기</h2><ol class="steps" id="steps"></ol>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="hI" tabindex="-1"><div class="handle"></div><h2 id="hI">홈 화면에 추가하기</h2><ol class="steps" id="steps"></ol>
   <p class="foot">추가하면 앱처럼 전체 화면으로 열리고, 목록과 모든 영상을 바로 볼 수 있어요.</p></div>
 <script>
 (function () {
@@ -112,15 +114,18 @@ footer { margin:28px 2px 0; font-size:12px; line-height:18px; color:var(--ink-3)
   function fmt(t) { t = Math.max(0, Math.floor(t || 0)); var h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), s = t % 60;
     return (h ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (s < 10 ? '0' : '') + s; }
   // progress per video from the player's own resume state (ks:<id>.t)
-  document.querySelectorAll('.card').forEach(function (c) {
-    var st = null; try { st = JSON.parse(localStorage.getItem('ks:' + c.dataset.id) || 'null'); } catch (e) {}
-    var d = +c.dataset.dur || 0, t = st && st.t || 0, pg = c.querySelector('.pg');
+  function progress() { document.querySelectorAll('.card').forEach(function (c) {
+    var st = null; try { st = JSON.parse(localStorage.getItem('ks:' + (c.dataset.key || c.dataset.id)) || 'null'); } catch (e) {}
+    var d = +c.dataset.dur || 0, t = st && typeof st.t === 'number' && isFinite(st.t) ? st.t : 0, pg = c.querySelector('.pg');
     if (!pg || !d || t < 10) return;
     var done = t > d - 15;
     pg.querySelector('i').style.width = Math.min(100, t / d * 100).toFixed(1) + '%';
     pg.querySelector('span').textContent = done ? '다 들었어요' : fmt(t) + '부터 이어서';
     pg.classList.add('show');
-  });
+  }); }
+  progress();
+  // coming back from a video with the back button restores this page from the bfcache: refresh the progress bars
+  window.addEventListener('pageshow', function (e) { if (e.persisted) progress(); });
   // install: Chrome/Samsung Internet prompt, otherwise a short how-to sheet; hidden once installed / running standalone
   var btn = document.getElementById('inst'), deferred = null, mq = matchMedia('(display-mode: standalone)');
   var standalone = mq.matches || navigator.standalone === true;
@@ -128,7 +133,16 @@ footer { margin:28px 2px 0; font-size:12px; line-height:18px; color:var(--ink-3)
   window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; });
   window.addEventListener('appinstalled', function () { btn.classList.remove('show'); deferred = null; });
   var sheet = document.getElementById('sheet'), scrim = document.getElementById('scrim');
-  function close() { sheet.classList.remove('show'); scrim.classList.remove('show'); }
+  // the sheet owns one history entry, so Android back (installed app) closes it instead of leaving the app
+  var isOpen = false;
+  if (history.state && history.state.sheet) { try { history.replaceState(null, ''); } catch (e) {} }
+  function open() { sheet.classList.add('show'); scrim.classList.add('show'); if (!isOpen) { isOpen = true; try { history.pushState({ sheet: 1 }, ''); } catch (e) {} } sheet.focus({ preventScroll: true }); }
+  function close(fromPop) {
+    if (!isOpen) return; isOpen = false;
+    sheet.classList.remove('show'); scrim.classList.remove('show');
+    if (fromPop !== true && history.state && history.state.sheet) { try { history.back(); } catch (e) {} }
+  }
+  window.addEventListener('popstate', function () { if (isOpen) close(true); });
   scrim.addEventListener('click', close);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
   btn.addEventListener('click', function () {
@@ -143,9 +157,23 @@ footer { margin:28px 2px 0; font-size:12px; line-height:18px; color:var(--ink-3)
       : /SamsungBrowser/.test(ua)
       ? '<li>아래쪽 <b>메뉴 ≡</b> 를 눌러요</li><li><b>현재 페이지 추가</b> → <b>홈 화면</b>을 골라요</li><li><b>추가</b>를 누르면 끝!</li>'
       : '<li>오른쪽 위 <b>메뉴 ⋮</b> 를 눌러요</li><li><b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 골라요</li><li><b>설치</b>를 누르면 끝!</li>';
-    sheet.classList.add('show'); scrim.classList.add('show');
+    open();
   });
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(function () {});
+  if ('serviceWorker' in navigator) {
+    // a new version (sw.js changes on every publish): this page has no playback state, so reload quietly — once, and not over the sheet
+    var had = !!navigator.serviceWorker.controller, reg = null, checked = 0;
+    navigator.serviceWorker.register('./sw.js', { scope: './' }).then(function (r) { reg = r; checked = Date.now(); }).catch(function () {});
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (!had) { had = true; return; }
+      var last = 0; try { last = +sessionStorage.getItem('ks:swr') || 0; } catch (e) {}
+      if (isOpen || Date.now() - last < 60000) return;
+      try { sessionStorage.setItem('ks:swr', Date.now()); } catch (e) {}
+      location.reload();
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden && reg && Date.now() - checked > 5000) { checked = Date.now(); reg.update().catch(function () {}); }
+    });
+  }
 })();
 </script>
 </body>
