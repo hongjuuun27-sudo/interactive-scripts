@@ -1,11 +1,152 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#F7F3EC"><title>인터랙티브 스크립트</title><style>
-:root{--bg:#F7F3EC;--sf:#FFFDF9;--ink:#211D18;--ink3:#72685E;--line:#E8E0D4;--ac:#D97757}
-@media (prefers-color-scheme:dark){:root{--bg:#1C1A17;--sf:#252220;--ink:#F3EDE4;--ink3:#9C9286;--line:#3A3531;--ac:#E08A68}}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,"Noto Sans KR",sans-serif}
-main{max-width:560px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top)) 18px 40px}
-h1{font:700 24px/1.3 Georgia,"Noto Serif",serif;margin:0 0 4px}p.lead{color:var(--ink3);margin:0 0 22px;font-size:14px}
-.card{display:block;text-decoration:none;color:inherit;background:var(--sf);border:1px solid var(--line);border-left:3px solid var(--ac);border-radius:14px;padding:16px 18px;margin-bottom:12px;transition:transform .12s}
-.card:active{transform:scale(.98)}.t{font-weight:700;font-size:17px}.s{margin-top:3px;font-size:14px}.m{margin-top:8px;font-size:12px;color:var(--ink3)}
-</style></head><body><main><h1>인터랙티브 스크립트</h1><p class="lead">영상 + 노래방 자막 + 한글 번역</p>
-<a class="card" href="./2122717728138256733/"><div class="t">다리오 아모데이 × 데미스 하사비스</div><div class="s">AGI는 언제 오고, 무엇이 위험한가</div><div class="m">13:49 · 194문장 · 2026-11-19</div></a></main></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F7F3EC">
+<meta name="color-scheme" content="light dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="스크립트">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<title>인터랙티브 스크립트</title>
+<script>
+// same app-wide prefs as the video pages (ks:prefs.theme = system | light | dark)
+(function () {
+  var p = {}; try { p = JSON.parse(localStorage.getItem('ks:prefs') || '{}'); } catch (e) {}
+  var th = p.theme || 'system';
+  var dark = th === 'dark' || (th === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.classList.toggle('dark', dark);
+  if (dark) document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1C1A17');
+})();
+</script>
+<style>
+:root { --bg:#F7F3EC; --surface:#FFFDF9; --line:#E8E0D4; --chip:#EFE8DE; --ink:#211D18; --ink-2:#4F473F; --ink-3:#72685E;
+  --accent:#D97757; --accent-ink:#9C4127; --accent-soft:#F6DCCD; --on-accent:#fff; --sh:rgba(33,29,24,.10); --press:rgba(33,29,24,.05);
+  --scrim:rgba(33,29,24,.32); --thumb:#2A2521;
+  --font-en:Georgia,"Noto Serif",serif; --font-ui:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR","Noto Sans CJK KR",sans-serif;
+  color-scheme:light; }
+:root.dark { --bg:#1C1A17; --surface:#252220; --line:#3A3531; --chip:#2F2B27; --ink:#F3EDE4; --ink-2:#CDC4B8; --ink-3:#9C9286;
+  --accent:#E08A68; --accent-ink:#F0A584; --accent-soft:#4A2C20; --on-accent:#1C1A17; --sh:rgba(0,0,0,.35); --press:rgba(255,255,255,.05);
+  --scrim:rgba(0,0,0,.5); --thumb:#0E0D0B; color-scheme:dark; }
+*, *::before, *::after { box-sizing:border-box; }
+html { background:var(--bg); }
+body { margin:0; min-height:100vh; background:var(--bg); color:var(--ink); font-family:var(--font-ui); -webkit-tap-highlight-color:transparent;
+  -webkit-text-size-adjust:100%; word-break:keep-all; }
+button { font:inherit; color:inherit; background:none; border:0; padding:0; cursor:pointer; }
+:focus-visible { outline:2px solid var(--accent-ink); outline-offset:2px; }
+main { max-width:640px; margin:0 auto; padding:calc(20px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+header { display:flex; align-items:center; gap:12px; margin:4px 2px 6px; }
+header img { width:44px; height:44px; border-radius:12px; flex:none; box-shadow:0 2px 8px var(--sh); }
+header .tt { flex:1; min-width:0; }
+h1 { margin:0; font-size:20px; line-height:26px; font-weight:800; letter-spacing:-0.01em; }
+.lead { margin:1px 0 0; font-size:13px; line-height:18px; color:var(--ink-3); }
+#inst { display:none; align-items:center; gap:6px; height:36px; padding:0 14px 0 12px; border-radius:999px; background:var(--accent-soft); color:var(--accent-ink);
+  font-size:13px; font-weight:700; white-space:nowrap; transition:transform 160ms ease-out; }
+#inst svg { width:16px; height:16px; }
+#inst.show { display:flex; }
+#inst:active { transform:scale(.97); }
+.count { margin:22px 2px 10px; font-size:12px; line-height:16px; font-weight:600; color:var(--ink-3); letter-spacing:.02em; }
+.cards { display:grid; gap:12px; }
+@media (min-width:600px) { .cards { grid-template-columns:1fr 1fr; } }
+.card { display:flex; flex-direction:column; text-decoration:none; color:inherit; background:var(--surface); border-radius:18px; overflow:hidden;
+  box-shadow:0 0 0 1px var(--line), 0 4px 16px var(--sh); transition:transform 160ms ease-out; }
+.card:active { transform:scale(.985); }
+.th { position:relative; aspect-ratio:16/7; background:var(--thumb); overflow:hidden; }
+.th img { width:100%; height:100%; object-fit:cover; object-position:50% 30%; display:block; }
+.th .dur { position:absolute; right:10px; bottom:10px; padding:2px 8px; border-radius:8px; background:rgba(20,18,15,.72); color:#F3EDE4;
+  font-size:12px; line-height:18px; font-weight:600; font-variant-numeric:tabular-nums; }
+.th .play { position:absolute; left:12px; bottom:10px; width:36px; height:36px; border-radius:50%; background:var(--accent); color:#fff; display:grid; place-items:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.3); }
+.th .play svg { width:16px; height:16px; margin-left:2px; }
+.bd { padding:14px 16px 16px; }
+.t { font-size:17px; line-height:24px; font-weight:700; text-wrap:balance; }
+.s { margin-top:2px; font-size:14px; line-height:20px; color:var(--ink-2); text-wrap:balance; }
+.m { display:flex; flex-wrap:wrap; gap:4px 6px; margin-top:10px; font-size:12px; line-height:16px; color:var(--ink-3); font-variant-numeric:tabular-nums; }
+.m span + span::before { content:"·"; margin-right:6px; }
+.pg { display:none; align-items:center; gap:10px; margin-top:12px; font-size:12px; line-height:16px; font-weight:600; color:var(--accent-ink); font-variant-numeric:tabular-nums; }
+.pg.show { display:flex; }
+.pg .bar { flex:1; height:3px; border-radius:2px; background:var(--line); overflow:hidden; }
+.pg .bar i { display:block; height:100%; background:var(--accent); border-radius:2px; }
+.empty { padding:48px 16px; text-align:center; color:var(--ink-3); font-size:14px; }
+footer { margin:28px 2px 0; font-size:12px; line-height:18px; color:var(--ink-3); text-align:center; }
+/* install hint sheet */
+#scrim { position:fixed; inset:0; background:var(--scrim); opacity:0; visibility:hidden; transition:opacity 200ms, visibility 0s 200ms; z-index:10; }
+#scrim.show { opacity:1; visibility:visible; transition:opacity 260ms; }
+.sheet { position:fixed; left:0; right:0; bottom:0; z-index:11; max-width:560px; margin:0 auto; background:var(--surface); border-radius:20px 20px 0 0;
+  padding:8px 20px calc(max(12px, env(safe-area-inset-bottom)) + 12px); box-shadow:0 -12px 40px var(--sh); transform:translateY(105%); visibility:hidden;
+  transition:transform 200ms ease-in, visibility 0s 200ms; }
+.sheet.show { transform:none; visibility:visible; transition:transform 260ms cubic-bezier(.32,.72,0,1); }
+.handle { width:36px; height:4px; border-radius:2px; background:var(--line); margin:0 auto 14px; }
+.sheet h2 { margin:0 0 12px; font-size:17px; line-height:24px; font-weight:700; }
+.steps { margin:0; padding:0; list-style:none; counter-reset:st; }
+.steps li { position:relative; padding:8px 0 8px 36px; font-size:15px; line-height:22px; color:var(--ink-2); counter-increment:st; }
+.steps li::before { content:counter(st); position:absolute; left:0; top:7px; width:24px; height:24px; border-radius:50%; background:var(--accent-soft);
+  color:var(--accent-ink); font-size:13px; line-height:24px; font-weight:700; text-align:center; }
+.steps b { color:var(--ink); }
+.foot { margin:12px 2px 0; font-size:12px; line-height:17px; color:var(--ink-3); }
+@media (prefers-reduced-motion: reduce) { .card, #inst, .sheet, .sheet.show { transition:none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="./icons/icon-192.png" alt="">
+    <div class="tt"><h1>인터랙티브 스크립트</h1><p class="lead">영상 + 노래방 자막 + 한글 번역</p></div>
+    <button type="button" id="inst"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v11M7.5 10.5L12 15l4.5-4.5"/><path d="M5 15.5v2A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-2"/></svg>앱으로 설치</button>
+  </header>
+  <div class="count">영상 1개</div>
+  <div class="cards">
+    <a class="card" href="./2122717728138256733/" data-id="2122717728138256733" data-dur="829.742"><div class="th"><img src="./2122717728138256733/thumb.jpg" alt="" loading="lazy"><span class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.6v12.8a1 1 0 0 0 1.52.85l10.2-6.4a1 1 0 0 0 0-1.7L9.52 4.75A1 1 0 0 0 8 5.6z"/></svg></span><span class="dur">13:49</span></div><div class="bd"><div class="t">다리오 아모데이 × 데미스 하사비스</div><div class="s">AGI는 언제 오고, 무엇이 위험한가</div><div class="m"><span>194문장</span><span>다리오 · 데미스 · 재니</span><span>핵심 표현 188개</span><span>2026-11-19</span></div><div class="pg"><span></span><div class="bar"><i></i></div></div></div></a>
+  </div>
+  <footer>문장을 누르면 거기서부터 들려줘요 · 점선 밑줄은 핵심 표현이에요</footer>
+</main>
+<div id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="hI"><div class="handle"></div><h2 id="hI">홈 화면에 추가하기</h2><ol class="steps" id="steps"></ol>
+  <p class="foot">추가하면 앱처럼 전체 화면으로 열리고, 목록과 모든 영상을 바로 볼 수 있어요.</p></div>
+<script>
+(function () {
+  'use strict';
+  function fmt(t) { t = Math.max(0, Math.floor(t || 0)); var h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), s = t % 60;
+    return (h ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (s < 10 ? '0' : '') + s; }
+  // progress per video from the player's own resume state (ks:<id>.t)
+  document.querySelectorAll('.card').forEach(function (c) {
+    var st = null; try { st = JSON.parse(localStorage.getItem('ks:' + c.dataset.id) || 'null'); } catch (e) {}
+    var d = +c.dataset.dur || 0, t = st && st.t || 0, pg = c.querySelector('.pg');
+    if (!pg || !d || t < 10) return;
+    var done = t > d - 15;
+    pg.querySelector('i').style.width = Math.min(100, t / d * 100).toFixed(1) + '%';
+    pg.querySelector('span').textContent = done ? '다 들었어요' : fmt(t) + '부터 이어서';
+    pg.classList.add('show');
+  });
+  // install: Chrome/Samsung Internet prompt, otherwise a short how-to sheet; hidden once installed / running standalone
+  var btn = document.getElementById('inst'), deferred = null, mq = matchMedia('(display-mode: standalone)');
+  var standalone = mq.matches || navigator.standalone === true;
+  if (!standalone) btn.classList.add('show');
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; });
+  window.addEventListener('appinstalled', function () { btn.classList.remove('show'); deferred = null; });
+  var sheet = document.getElementById('sheet'), scrim = document.getElementById('scrim');
+  function close() { sheet.classList.remove('show'); scrim.classList.remove('show'); }
+  scrim.addEventListener('click', close);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  btn.addEventListener('click', function () {
+    if (deferred) {
+      var p = deferred; deferred = null; p.prompt();
+      if (p.userChoice) p.userChoice.then(function (r) { if (r && r.outcome === 'accepted') btn.classList.remove('show'); }).catch(function () {});
+      return;
+    }
+    var ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    document.getElementById('steps').innerHTML = ios
+      ? '<li>Safari 아래쪽의 <b>공유</b> 버튼을 눌러요</li><li><b>홈 화면에 추가</b>를 골라요</li><li>오른쪽 위 <b>추가</b>를 누르면 끝!</li>'
+      : /SamsungBrowser/.test(ua)
+      ? '<li>아래쪽 <b>메뉴 ≡</b> 를 눌러요</li><li><b>현재 페이지 추가</b> → <b>홈 화면</b>을 골라요</li><li><b>추가</b>를 누르면 끝!</li>'
+      : '<li>오른쪽 위 <b>메뉴 ⋮</b> 를 눌러요</li><li><b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 골라요</li><li><b>설치</b>를 누르면 끝!</li>';
+    sheet.classList.add('show'); scrim.classList.add('show');
+  });
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(function () {});
+})();
+</script>
+</body>
+</html>
