@@ -1194,11 +1194,17 @@ vbox.addEventListener('click', function (e) {
     if (failed) { toast('영상이 없어 재생할 수 없어요'); return; }
     cancelShadow(false);
     gotoSentence(i, true);
+    return true;
   }
+  // A row tap starts the follow-scroll (380 ms): the second tap of a double-tap would land on whatever row has slid under the
+  // finger by then (the next sentence). A tap at the same spot right after a row tap that played a sentence is the same intent.
+  var lastPlay = { t: -1e9, x: 0, y: 0 };
   list.addEventListener('click', function (e) {
     if (firedAt) { firedAt = 0; return; }  // the release of a long-press (star) is not a tap
     if (openSheet) return;
-    activate(e.target);
+    var now = performance.now();
+    if (now - lastPlay.t < 500 && Math.abs(e.clientX - lastPlay.x) < 30 && Math.abs(e.clientY - lastPlay.y) < 30) return;
+    if (activate(e.target)) lastPlay = { t: now, x: e.clientX, y: e.clientY };
   });
   // Key expressions are tab stops only for keyboard users. A focusable chunk is a touch-adjustment target: Chrome would snap a
   // finger tap on a neighbouring plain word onto it (opening the note instead of playing the sentence).
