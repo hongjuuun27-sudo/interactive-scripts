@@ -1,0 +1,1728 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F7F3EC">
+<meta name="color-scheme" content="light dark">
+<meta name="format-detection" content="telephone=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="스크립트">
+<link rel="manifest" href="../manifest.webmanifest"><link rel="apple-touch-icon" href="../icons/apple-touch-icon.png"><link rel="icon" href="../icons/favicon-32.png" sizes="32x32">
+<title>스크립트</title>
+<script>
+// Apply theme + text size before first paint (app-wide prefs).
+(function () {
+  var p = null; try { p = JSON.parse(localStorage.getItem('ks:prefs') || '{}'); } catch (e) {}
+  if (!p || typeof p !== 'object') p = {};
+  var th = p.theme, d = document.documentElement;
+  var dark = th === 'dark' || (th !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+  d.classList.toggle('dark', dark); d.dataset.size = /^[sml]$/.test(p.font) ? p.font : 'm';
+})();
+</script>
+<style>
+/* Literata 400 (SIL OFL 1.1), Latin subset — regenerate with pipeline/make_font.sh */
+@font-face { font-family:"KS Serif"; font-style:normal; font-weight:400; font-display:block;
+  src:url(data:font/woff2;base64,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) format("woff2");
+  unicode-range:U+0000-00FF,U+2013-2014,U+2018-201D,U+2026,U+2032-2033; }
+:root {
+  --bg:#F7F3EC; --surface:#FFFDF9; --row-active:#FAF1E9; --line:#E8E0D4; --chip:#EFE8DE;
+  --ink:#211D18; --ink-2:#4F473F; --ink-3:#72685E; --ko:#5C544B;
+  --en-past:#72685E; --en-up:#5E554C; --en-act-up:#4F473F;
+  --accent:#D97757; --accent-ink:#9C4127; --accent-soft:#F6DCCD; --marker:#F2B494;
+  --veil:#C9BCAB; --veil-spoken:#6B5F53; --video-bg:#14120F; --scrim:rgba(33,29,24,.32); --on-accent:#FFFFFF;
+  --badge-bg:#9C4127; --on-badge:#FFFFFF;
+  --toast-bg:#211D18; --toast-fg:#F7F3EC; --toast-action:#D97757; --press:rgba(33,29,24,.06);
+  --sh:rgba(33,29,24,.18); --sh-dock:rgba(33,29,24,.06);
+  /* speaker tints (warm-palette companions; never green/teal) */
+  --s0:#4B5E86; --s1:#7A4569; --s2:#7A560E; --s3:#A0473F;
+  --font-en:"KS Serif","Noto Serif",Georgia,serif;
+  --font-ko:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --font-ui:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR","Noto Sans CJK KR",sans-serif;
+  --en-fs:19px; --en-lh:28px; --ko-fs:15.5px; --ko-lh:24px;
+  --ease-row:cubic-bezier(.2,0,0,1); --ease-sheet:cubic-bezier(.32,.72,0,1); --ease-in:cubic-bezier(.2,.8,.2,1);
+  --safe-b:max(12px, env(safe-area-inset-bottom));
+  color-scheme:light;
+}
+:root.dark {
+  --bg:#1C1A17; --surface:#252220; --row-active:#2A2521; --line:#3A3531; --chip:#2F2B27;
+  --ink:#F3EDE4; --ink-2:#CDC4B8; --ink-3:#9C9286; --ko:#B7ADA1;
+  --en-past:#8E857A; --en-up:#A89F93; --en-act-up:#CDC4B8;
+  --accent:#E08A68; --accent-ink:#F0A584; --accent-soft:#4A2C20; --marker:#6E3F2C;
+  --veil:#4A433D; --veil-spoken:#A89F93; --video-bg:#0E0D0B; --scrim:rgba(0,0,0,.5); --on-accent:#1C1A17;
+  --badge-bg:#E08A68; --on-badge:#1C1A17;
+  --toast-bg:#3A3531; --toast-fg:#F3EDE4; --toast-action:#F0A584; --press:rgba(255,255,255,.06);
+  --sh:rgba(0,0,0,.45); --sh-dock:rgba(0,0,0,.25);
+  --s0:#A9B6D8; --s1:#D6A5C7; --s2:#DDB464; --s3:#E6A096;
+  color-scheme:dark;
+}
+:root[data-size="s"] { --en-fs:17px; --en-lh:25px; --ko-fs:14px; --ko-lh:22px; }
+:root[data-size="l"] { --en-fs:22px; --en-lh:32px; --ko-fs:17.5px; --ko-lh:27px; }
+
+*, *::before, *::after { box-sizing:border-box; }
+html, body { margin:0; height:100%; overflow:hidden; overscroll-behavior:none; background:var(--bg); }
+body {
+  font-family:var(--font-ui); color:var(--ink);
+  -webkit-tap-highlight-color:transparent; -webkit-text-size-adjust:100%; text-size-adjust:100%;
+  user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
+  touch-action:manipulation; word-break:keep-all;
+}
+button { font:inherit; color:inherit; background:none; border:0; padding:0; margin:0; cursor:pointer;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+button:focus { outline:none; }
+:focus-visible { outline:2px solid var(--accent-ink) !important; outline-offset:2px; }
+svg.i { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+.sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+/* ---------- shell ---------- */
+#app { position:fixed; inset:0; display:grid; grid-template-rows:auto auto minmax(0,1fr) auto; grid-template-columns:minmax(0,1fr);
+  grid-template-areas:"stage" "seek" "mid" "dock"; background:var(--bg); }
+#stage { grid-area:stage; } #seek { grid-area:seek; } #mid { grid-area:mid; } #dock { grid-area:dock; }
+
+/* A. video */
+#stage { background:var(--video-bg); padding-top:env(safe-area-inset-top); }
+#vbox { position:relative; width:100%; aspect-ratio:var(--ar, 16/9); max-height:38dvh; overflow:hidden; background:var(--video-bg); }
+#bHome { position:absolute; top:10px; left:10px; z-index:2; width:36px; height:36px; border-radius:50%; background:rgba(20,18,15,.45); color:#fff;
+  display:none; place-items:center; transition:opacity 160ms ease-out; }
+#bHome::after { content:""; position:absolute; inset:-6px; }
+#bHome svg { width:20px; height:20px; }
+.site #bHome { display:grid; }
+#vbox.playing #bHome:not(:focus-visible) { opacity:0; pointer-events:none; }
+#v { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:var(--video-bg); display:block; }
+#vbox.crop #v { object-fit:cover; object-position:50% 0; }
+.vlayer { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:16px 24px; color:#F3EDE4; opacity:0; visibility:hidden; transition:opacity 160ms ease-out, visibility 0s 160ms; }
+.vlayer.show { opacity:1; visibility:visible; transition:opacity 160ms ease-out; }
+#vload .t { font-size:17px; line-height:24px; font-weight:700; max-width:340px; text-wrap:balance; }
+#vload .st { font-size:13px; line-height:19px; color:#BDB3A6; margin-top:4px; max-width:340px; text-wrap:balance; }
+#vload .cap { font-size:12px; line-height:16px; font-weight:500; color:#9C9286; margin-top:14px; }
+#vload .shim { position:absolute; left:0; right:0; bottom:0; height:2px; overflow:hidden; }
+#vload .shim::after { content:""; position:absolute; top:0; bottom:0; width:40%; left:0;
+  background:linear-gradient(90deg, transparent, var(--accent), transparent); animation:shim 1.2s linear infinite; }
+@keyframes shim { from { transform:translateX(-100%); } to { transform:translateX(250%); } }
+#vbuf, #vpause { pointer-events:none; }
+#vbuf .disc { width:56px; height:56px; border-radius:50%; background:rgba(20,18,15,.62); display:grid; place-items:center; }
+.spin { width:28px; height:28px; border-radius:50%; border:2.5px solid rgba(243,237,228,.22); border-top-color:#F3EDE4; animation:spin .8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+#vpause .disc { width:64px; height:64px; border-radius:50%; background:rgba(20,18,15,.55); display:grid; place-items:center; color:#fff;
+  transform:scale(.92); transition:transform 160ms var(--ease-in); }
+#vpause.show .disc { transform:none; }
+#vpause .disc svg { width:28px; height:28px; }
+#vpause .pr { stroke-width:2; }
+#bAa { position:absolute; top:10px; right:10px; z-index:2; width:36px; height:36px; border-radius:50%; background:rgba(20,18,15,.45); color:#fff;
+  display:grid; place-items:center; transition:opacity 160ms ease-out, transform 160ms ease-out; }
+#bAa::after { content:""; position:absolute; inset:-6px; }
+#bAa svg { width:20px; height:20px; }
+#vbox.playing #bAa:not(:focus-visible) { opacity:0; pointer-events:none; }
+#verr { background:var(--video-bg); gap:0; }
+.failed #vload { transition:none; }  /* no crossfade of the loading title under the error card */
+#verr svg { width:28px; height:28px; color:var(--accent); }
+#verr .t { font-size:17px; line-height:24px; font-weight:700; margin-top:8px; text-wrap:balance; }
+#verr .b { font-size:14px; line-height:21px; color:#BDB3A6; margin-top:4px; max-width:320px; text-wrap:balance; }
+#verr .b code { font-family:inherit; color:#F3EDE4; font-weight:600; }
+#verr button[hidden] { display:none; }
+#verr button { margin-top:14px; height:44px; padding:0 20px; border-radius:999px; background:var(--accent); color:var(--on-accent);
+  font-size:14px; line-height:20px; font-weight:600; transition:transform 160ms ease-out; }
+#verr button:active { transform:scale(.97); transition-duration:60ms; }
+
+/* B. seek strip: 18 px band, 36 px hit area (extends 9 px into the video and the list) */
+#seek { position:relative; display:flex; align-items:center; gap:10px; height:20px; padding:0 14px; background:var(--bg); touch-action:none; cursor:pointer; z-index:3; }
+#seek::before { content:""; position:absolute; left:0; right:0; top:-9px; bottom:-8px; }
+#seek .tm { flex:none; font-size:11px; line-height:20px; font-weight:500; font-variant-numeric:tabular-nums; color:var(--ink-3); pointer-events:none; }
+#tCur { text-align:right; } #tDur { text-align:left; }
+#track { position:relative; flex:1; min-width:0; height:20px; }
+#track .rail, #track .fill { position:absolute; left:0; right:0; top:50%; height:3px; margin-top:-1.5px; border-radius:3px;
+  transition:height 120ms ease-out, margin-top 120ms ease-out; }
+#track .rail { background:var(--line); }
+#track .fill { background:var(--accent); transform-origin:0 50%; transform:scaleX(0); }
+#seek.press .rail, #seek.press .fill { height:5px; margin-top:-2.5px; }
+#ticks .tk { position:absolute; top:50%; width:5px; height:5px; margin:-8.5px 0 0 -2.5px; border-radius:50%; background:var(--accent); }
+#thumb { position:absolute; top:50%; left:0; width:18px; height:18px; margin:-9px 0 0 -9px; border-radius:50%; background:var(--accent);
+  box-shadow:0 1px 4px var(--sh); transform:scale(0); transition:transform 120ms ease-out; will-change:transform; }
+#seek.press #thumb { transform:scale(.78); }
+#seek.drag #thumb { transform:scale(1); }
+#bubble { position:absolute; bottom:19px; left:0; padding:3px 8px; border-radius:8px; background:var(--toast-bg); color:var(--toast-fg);
+  font-size:12px; line-height:16px; font-weight:500; font-variant-numeric:tabular-nums; transform:translateX(-50%); opacity:0; pointer-events:none;
+  transition:opacity 120ms ease-out; white-space:nowrap; box-shadow:0 2px 8px var(--sh); }
+#seek.press #bubble { opacity:1; }
+
+/* C. script list */
+#mid { position:relative; min-height:0; }
+#list { position:absolute; inset:0; overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
+  padding-top:14px; touch-action:pan-y; scrollbar-width:none;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 32px), transparent 100%);
+  mask-image:linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 32px), transparent 100%); }
+#list::-webkit-scrollbar { display:none; }
+.row { position:relative; margin:0 8px; padding:9px 12px 14px 14px; border-radius:14px; cursor:pointer;
+  transition:background-color 260ms var(--ease-row); -webkit-touch-callout:none; }
+.row.gap { margin-top:20px; }
+.gd { position:absolute; top:-17px; left:0; right:0; text-align:center; font-size:10px; line-height:12px; letter-spacing:.3em;
+  color:color-mix(in srgb, var(--ink-3) 45%, transparent); pointer-events:none; }
+/* meta line: timestamp · speaker ......... status badges · star  (fixed 20 px height on every row -> no reflow) */
+.meta { display:flex; align-items:center; gap:7px; height:20px; margin:0 -4px 4px 0; white-space:nowrap; font-family:var(--font-ui); }
+.ts { position:relative; flex:none; font-size:11.5px; line-height:20px; font-weight:500; font-variant-numeric:tabular-nums; letter-spacing:.01em;
+  color:var(--ink-3); transition:color 200ms var(--ease-row); }
+.ts::after { content:""; position:absolute; left:-14px; right:-8px; top:-12px; bottom:-12px; }
+.row.on .ts, .row.pre .ts { color:var(--accent-ink); }
+.sk { flex:none; height:18px; padding:0 7px; border-radius:999px; font-size:11px; line-height:18px; font-weight:700; letter-spacing:.01em;
+  color:var(--sc); background:color-mix(in srgb, var(--sc) 12%, transparent); }
+.sk.cont { padding:0; background:none; font-weight:600; opacity:.8; }
+.mr { margin-left:auto; display:flex; align-items:center; gap:6px; min-width:0; }
+.row::before { content:""; position:absolute; left:0; top:14px; bottom:14px; width:3px; border-radius:2px; background:var(--accent);
+  opacity:0; transform:scaleY(.6); transition:opacity 220ms var(--ease-row), transform 220ms var(--ease-row); }
+.row.on, .row.pre { background-color:var(--row-active); }
+.row.on { animation:rowIn 260ms var(--ease-in); }
+@keyframes rowIn { from { transform:scale(.985); } }
+.row.on::before { opacity:1; transform:none; }
+.row.loop::before { background:repeating-linear-gradient(to bottom, var(--accent) 0 6px, transparent 6px 10px); }
+.row.press { background-color:color-mix(in srgb, var(--row-active) 60%, transparent); transition-duration:100ms; }
+.row.on.press { background-color:color-mix(in srgb, var(--row-active) 70%, var(--ink) 4%); }
+.en { margin:0; font-family:var(--font-en); font-size:var(--en-fs); line-height:var(--en-lh); font-weight:400; letter-spacing:-0.005em;
+  color:var(--en-up); text-wrap:pretty; overflow-wrap:break-word; }
+.ko { margin:6px 0 0; font-family:var(--font-ko); font-size:var(--ko-fs); line-height:var(--ko-lh); letter-spacing:-0.01em; color:var(--ko);
+  word-break:keep-all; overflow-wrap:break-word; text-wrap:balance; }
+.row:not(.on) .ko { opacity:.85; }
+.row.past .en { color:var(--en-past); }
+.row.pre .en { color:var(--ink); }
+.w { border-radius:5px; padding:0 3px; margin:0 -3px; -webkit-box-decoration-break:clone; box-decoration-break:clone; transition:background-color 0ms; }
+.row.on .w { color:var(--en-act-up); transition:color 120ms ease-out, background-color 0ms; }
+.row.on .w.sp { color:var(--ink); }
+.row.on .w.cur { color:var(--ink); background-color:var(--marker); transition:color 120ms ease-out, background-color 90ms ease-out; }
+.buffering .row.on .w.cur { animation:pulse 1s ease-in-out infinite alternate; }
+@keyframes pulse { to { opacity:.45; } }
+.lp { display:none; font-size:11px; line-height:14px; font-weight:700; letter-spacing:.04em;
+  color:var(--on-badge); background:var(--badge-bg); border-radius:999px; height:20px; padding:3px 8px; white-space:nowrap; }
+.row.loop .lp { display:inline-block; }
+.st { position:relative; display:none; width:24px; height:20px; place-items:center; color:var(--ink-3); }
+.st::after { content:""; position:absolute; inset:-12px -10px; }
+.st svg { width:14px; height:14px; fill:currentColor; stroke:currentColor; stroke-width:1.75; stroke-linejoin:round; display:block; }
+.row.star .st { display:grid; color:var(--accent); }
+.row.on .st { display:grid; }
+.row.on .st svg { width:18px; height:18px; fill:none; }
+.row.on.star .st svg { fill:currentColor; }
+.st.pop svg { animation:pop 220ms var(--ease-in); }
+@keyframes pop { 50% { transform:scale(1.25); } }
+.say, .hold { display:none; align-items:center; gap:4px; font-size:12.5px; line-height:18px; font-weight:600; color:var(--accent-ink); white-space:nowrap; }
+.say svg, .hold svg { width:15px; height:15px; stroke-width:2; }
+.hold { color:var(--ink-2); font-weight:500; }
+.hold b { font-weight:700; color:var(--accent-ink); }
+.say .num { display:none; font-variant-numeric:tabular-nums; }
+.row.wait .say, .row.held .hold { display:flex; }
+.row.held .hold { animation:fadeIn 240ms ease-out; }
+#cdBar { position:absolute; left:14px; right:12px; bottom:6px; height:3px; border-radius:2px; background:var(--accent);
+  transform-origin:0 50%; animation:drainX var(--w, 3s) linear forwards; pointer-events:none; }
+@keyframes drainX { from { transform:scaleX(1); } to { transform:scaleX(0); } }
+/* key expressions: dotted terracotta underline on the chunk; coexists with the .cur marker, past/upcoming colours and veils */
+.nt { --dot:color-mix(in srgb, var(--accent) 85%, transparent);
+  background-image:radial-gradient(circle at 1.25px 1.25px, var(--dot) 1px, transparent 1.35px);
+  background-size:4.5px 2.5px; background-repeat:repeat-x; background-position:0 100%; background-origin:content-box;
+  -webkit-box-decoration-break:clone; box-decoration-break:clone; padding:8px 0; cursor:pointer; border-radius:5px; transition:background-color 120ms; }
+.row.on .nt .w.cur { background-image:inherit; background-size:4.5px 2.5px; background-repeat:repeat-x; background-position:0 100%; background-origin:content-box; }
+.row.past .nt { --dot:color-mix(in srgb, var(--accent) 55%, transparent); }
+.nt.sv { --dot:var(--accent-ink); }
+.nt.press { background-color:color-mix(in srgb, var(--accent) 14%, transparent); }
+.hide-en .row:not(.rv-en) .nt { background-image:none; }
+.coach { margin-top:8px; font-family:var(--font-ui); font-size:13px; line-height:18px; font-weight:500; color:var(--ink-3); animation:fadeIn 300ms ease-out; }
+@keyframes fadeIn { from { opacity:0; } }
+/* hide modes — Korean: frosted spoiler text; English: cloze rules under each word (karaoke runs on the rules) */
+.hide-ko .row:not(.rv-ko) .ko { color:transparent; text-shadow:0 0 9px color-mix(in srgb, var(--ko) 70%, transparent); }
+.hide-ko .row.rv-ko .ko { transition:color 200ms ease-out, text-shadow 200ms ease-out; }
+.hide-en .en .w { position:relative; }
+.hide-en .en .w::after { content:""; position:absolute; left:3px; right:3px; bottom:4px; height:2px; border-radius:1px; background-color:var(--veil); }
+.hide-en .row:not(.rv-en) .en .w, .hide-en .row.on:not(.rv-en) .en .w.cur { color:transparent; background-color:transparent; }
+.hide-en .row.on .en .w::after { transition:background-color 90ms ease-out, opacity 200ms ease-out; }
+.hide-en .row.on .en .w.sp::after { background-color:var(--veil-spoken); }
+.hide-en .row.on .en .w.cur::after { background-color:var(--accent); height:3px; }
+.hide-en .row.rv-en .en .w::after { opacity:0; }
+.hide-en .row.rv-en .en .w { transition:color 200ms ease-out; }
+#spacer { pointer-events:none; }
+#endb { display:none; pointer-events:auto; flex-direction:column; align-items:center; gap:14px; padding:28px 24px 0; text-align:center; animation:fadeIn 300ms ease-out; }
+#endb.show { display:flex; }
+#endb .t { font-size:15px; line-height:22px; color:var(--ink-2); }
+#endb .acts { display:flex; gap:8px; }
+#empty { display:none; position:absolute; inset:0; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; }
+#empty .t { font-size:17px; line-height:24px; font-weight:700; }
+#empty .b { font-size:14px; line-height:21px; color:var(--ink-3); margin-top:4px; }
+.notx #empty { display:flex; }
+.notx #ctl { visibility:hidden; }
+
+/* pill + toast */
+#pill { position:absolute; left:50%; bottom:12px; height:48px; padding:4px 0; transform:translate(-50%, 8px); opacity:0; visibility:hidden;
+  transition:opacity 140ms ease-in, transform 140ms ease-in, visibility 0s 140ms; z-index:4; }
+#pill span { display:flex; align-items:center; gap:6px; height:40px; padding:0 16px; border-radius:999px; background:var(--surface);
+  box-shadow:0 6px 20px var(--sh), 0 0 0 1px var(--line); font-size:14px; line-height:20px; font-weight:600; color:var(--ink); transition:transform 160ms ease-out, background-color 90ms; }
+#pill svg { width:18px; height:18px; color:var(--accent-ink); stroke-width:2; }
+#pill:active span { transform:scale(.97); background:var(--accent-soft); transition-duration:60ms; }
+#pill.show { opacity:1; visibility:visible; transform:translate(-50%, 0); transition:opacity 180ms ease-out, transform 180ms ease-out; }
+#toast { position:absolute; left:50%; top:10px; max-width:min(360px, calc(100% - 32px)); width:max-content; z-index:5;
+  display:flex; align-items:center; gap:14px; padding:10px 16px; border-radius:12px; background:var(--toast-bg); color:var(--toast-fg);
+  box-shadow:0 6px 20px var(--sh); font-size:14px; line-height:20px; font-weight:600;
+  transform:translate(-50%, -6px); opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity 160ms ease-out, transform 160ms ease-out, visibility 0s 160ms; }
+#toast.show { opacity:1; visibility:visible; transform:translate(-50%, 0); pointer-events:auto; transition:opacity 200ms ease-out, transform 200ms var(--ease-in); }
+#toast button { color:var(--toast-action); font-weight:700; margin:-10px -8px -10px 0; padding:10px 8px; white-space:nowrap; }
+
+/* D. dock */
+#dock { position:relative; background:var(--surface); padding:8px 16px var(--safe-b);
+  box-shadow:0 -1px 0 var(--line), 0 -8px 24px var(--sh-dock); z-index:3; }
+#ctl { display:flex; gap:8px; height:44px; margin-bottom:4px; }
+#ctl .seg { flex:1; }
+.chip { display:flex; align-items:center; justify-content:center; gap:5px; height:44px; padding:0 14px; border-radius:999px;
+  background:var(--chip); color:var(--ink); font-size:14px; line-height:20px; font-weight:600; font-variant-numeric:tabular-nums;
+  white-space:nowrap; min-width:0; transition:transform 160ms ease-out, background-color 150ms ease-out, color 150ms; }
+.chip svg { width:16px; height:16px; stroke-width:2; color:var(--ink-3); }
+.chip.on { background:var(--accent-soft); color:var(--accent-ink); }
+.chip.on svg { color:var(--accent-ink); }
+#cSpeed { width:72px; flex:none; padding:0 8px; }
+.chip:active, .tb:active, .tg:active, .seg button:active, .speeds button:active { transform:scale(.97); transition-duration:60ms; }
+#bar { position:relative; height:56px; }
+/* fixed 5-slot transport: [반복] [이전] [play] [다음] [재생 방식] — slot boxes never change in any mode/state, only their content */
+#transport { position:absolute; inset:0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 56px minmax(0,1fr) minmax(0,1fr);
+  align-items:center; justify-items:center; }
+.tb { position:relative; width:48px; height:48px; border-radius:50%; display:grid; place-items:center; color:var(--ink); transition:transform 160ms ease-out, background-color 90ms, opacity 160ms; }
+.tb:active { background:var(--press); }
+.tb svg.i { fill:currentColor; stroke:none; }
+.tg { position:relative; width:72px; height:56px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; color:var(--ink-3);
+  transition:transform 160ms ease-out, color 150ms; }
+.tg .dc { width:40px; height:40px; border-radius:50%; display:grid; place-items:center; transition:background-color 150ms ease-out; }
+.tg .dc svg { width:22px; height:22px; }
+.tg .lb { font-size:10px; line-height:12px; font-weight:600; white-space:nowrap; }
+.tg[aria-pressed="true"], .tg.on { color:var(--accent-ink); }
+.tg[aria-pressed="true"] .dc, .tg.on .dc { background:var(--accent-soft); }
+.tg .dc svg { opacity:0; position:absolute; transition:opacity 120ms ease-out; }
+.tg .dc { position:relative; }
+.tg .dc svg.sel { opacity:1; position:static; }
+/* prev slot shows "다시 듣기" during the shadowing wait (same 48 px box, icon swap only) */
+#bPrev svg.i { position:absolute; left:12px; top:12px; transition:opacity 120ms ease-out; }
+#bPrev .rp { opacity:0; fill:none; stroke:currentColor; stroke-width:2; }
+#dock.waiting #bPrev .pv { opacity:0; } #dock.waiting #bPrev .rp { opacity:1; }
+/* "one sentence, then stop": the next button carries the cue */
+#bNext.cue { color:var(--accent-ink); background:var(--accent-soft); }
+#bNext.cue::before { content:""; position:absolute; inset:0; border-radius:50%; border:2px solid var(--accent); animation:cue 1.8s ease-out infinite; pointer-events:none; }
+@keyframes cue { 0% { transform:scale(.9); opacity:.9; } 70%, 100% { transform:scale(1.22); opacity:0; } }
+#bPlay { width:56px; height:56px; background:var(--accent); color:var(--on-accent); box-shadow:0 2px 8px color-mix(in srgb, var(--accent) 35%, transparent); }
+#bPlay:active { background:var(--accent); filter:brightness(.95); }
+#bPlay svg.i { position:absolute; left:16px; top:16px; width:24px; height:24px; opacity:0; transform:scale(.8); transition:opacity 120ms ease-out, transform 120ms ease-out; }
+#bPlay .pr, #bPlay .pk { fill:none !important; stroke:currentColor !important; stroke-width:2; }
+#bPlay[data-s="play"] .pi, #bPlay[data-s="pause"] .pp, #bPlay[data-s="end"] .pr, #bPlay[data-s="pick"] .pk { opacity:1; transform:none; }
+#bPlay .pi { margin-left:1.5px; }
+#bPlay .ring { position:absolute; inset:-4px; border-radius:50%; border:2.5px solid transparent; border-top-color:var(--accent); opacity:0; pointer-events:none; }
+#bPlay.queued .ring { opacity:1; animation:spin .8s linear infinite; }
+#bPlay svg.cd { position:absolute; inset:-5px; width:66px; height:66px; transform:rotate(-90deg); opacity:0; pointer-events:none; overflow:visible; }
+#bPlay svg.cd circle { fill:none; stroke-width:3; }
+#bPlay svg.cd .bg { stroke:var(--line); }
+#bPlay svg.cd .fg { stroke:var(--accent); stroke-linecap:round; stroke-dasharray:197.92; stroke-dashoffset:0; }
+#dock.waiting #bPlay svg.cd { opacity:1; }
+#dock.waiting #bPlay svg.cd.run .fg { animation:drain var(--w, 3s) linear forwards; }
+@keyframes drain { to { stroke-dashoffset:-197.92; } }
+
+/* segmented controls (dock + sheet) */
+.seg { display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:2px; padding:2px; border-radius:12px; background:var(--chip); }
+.seg button { height:40px; border-radius:10px; font-size:14px; line-height:20px; font-weight:600; color:var(--ink-3);
+  transition:transform 160ms ease-out, background-color 120ms, color 120ms; }
+.seg button[aria-checked="true"] { background:var(--surface); color:var(--ink); box-shadow:0 1px 3px var(--sh); }
+
+/* sheets */
+#scrim { position:fixed; inset:0; background:var(--scrim); opacity:0; visibility:hidden; transition:opacity 200ms ease-in, visibility 0s 200ms; z-index:10; }
+#scrim.show { opacity:1; visibility:visible; transition:opacity 260ms var(--ease-sheet); }
+.sheet { position:fixed; left:0; right:0; bottom:0; z-index:11; background:var(--surface); border-radius:20px 20px 0 0;
+  padding:8px 20px calc(var(--safe-b) + 12px); box-shadow:0 -12px 40px var(--sh);
+  transform:translateY(105%); visibility:hidden; transition:transform 200ms ease-in, visibility 0s 200ms; touch-action:pan-y; max-width:560px; margin:0 auto;
+  max-height:calc(100dvh - 48px - env(safe-area-inset-top));  /* a tappable strip of scrim always stays above a tall sheet */ overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
+.sheet::-webkit-scrollbar { display:none; }
+.sheet.fit, .sheet .handle, .sheet h2 { touch-action:none; }
+.handle { position:relative; }
+.handle::before { content:""; position:absolute; left:-60px; right:-60px; top:-8px; bottom:-12px; }
+.sheet:focus { outline:none; }
+.sheet.show { transform:translateY(var(--dy, 0px)); visibility:visible; transition:transform 260ms var(--ease-sheet); }
+.sheet.dragging { transition:none; }
+.handle { width:36px; height:4px; border-radius:2px; background:var(--line); margin:0 auto 14px; }
+.sheet h2 { margin:0 0 16px; font-size:17px; line-height:24px; font-weight:700; }
+.sheet .sub { margin:-14px 0 16px; font-size:13px; line-height:18px; color:var(--ink-3);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.sheet h3 { margin:18px 0 8px; font-size:12px; line-height:16px; font-weight:500; color:var(--ink-3); }
+.speeds { display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; }
+.speeds button { height:48px; border-radius:12px; background:var(--chip); font-size:15px; font-weight:600; font-variant-numeric:tabular-nums;
+  transition:transform 160ms ease-out, background-color 120ms, color 120ms; }
+.speeds button[aria-checked="true"] { background:var(--ink); color:var(--bg); }
+.speedcap { display:flex; justify-content:space-between; margin-top:8px; padding:0 4px; font-size:12px; line-height:16px; font-weight:500; color:var(--ink-3); }
+#segFont button { height:64px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; }
+#segFont .smp { line-height:1.2; font-weight:400; color:var(--ink); white-space:nowrap; }
+#segFont .smp .e { font-family:var(--font-en); }
+#segFont .smp .k { font-family:var(--font-ko); }
+#segFont .lb { font-size:11px; line-height:14px; font-weight:500; color:var(--ink-3); }
+.swrow { display:flex; align-items:center; justify-content:space-between; width:100%; height:48px; margin-top:12px; text-align:left;
+  font-size:15px; line-height:22px; font-weight:500; color:var(--ink); }
+.sw { position:relative; flex:none; width:44px; height:26px; border-radius:13px; background:var(--line); transition:background-color 150ms ease-out; }
+.sw::after { content:""; position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.25); transition:transform 150ms ease-out; }
+.swrow[aria-checked="true"] .sw { background:var(--accent); }
+.swrow[aria-checked="true"] .sw::after { transform:translateX(18px); }
+
+/* list rows in sheets (내 표현 / 앱으로 설치) */
+.lrows { margin:18px -8px 0; border-top:1px solid var(--line); padding-top:6px; }
+.lrow { display:flex; align-items:center; gap:12px; width:100%; min-height:52px; padding:6px 8px; border-radius:12px; text-align:left;
+  font-size:15px; line-height:21px; font-weight:500; color:var(--ink); transition:background-color 90ms; }
+.lrow:active { background:var(--press); }
+.lrow .ic { width:36px; height:36px; flex:none; border-radius:10px; display:grid; place-items:center; background:var(--chip); color:var(--accent-ink); }
+.lrow .ic svg { width:20px; height:20px; }
+.lrow .tx { flex:1; min-width:0; }
+.lrow .tx small { display:block; font-size:12px; line-height:16px; color:var(--ink-3); font-weight:400; margin-top:1px; }
+.lrow .val { font-size:14px; font-weight:600; color:var(--ink-3); font-variant-numeric:tabular-nums; }
+.lrow .chev { width:18px; height:18px; color:var(--ink-3); }
+/* play-mode sheet */
+.modes { display:flex; flex-direction:column; gap:8px; }
+.modes button { display:flex; align-items:center; gap:14px; width:100%; min-height:64px; padding:10px 14px; border-radius:14px; text-align:left;
+  background:var(--chip); border:1.5px solid transparent; transition:transform 160ms ease-out, background-color 120ms, border-color 120ms; }
+.modes button:active { transform:scale(.985); transition-duration:60ms; }
+.modes .ic { width:40px; height:40px; flex:none; border-radius:50%; display:grid; place-items:center; background:var(--surface); color:var(--ink-2); }
+.modes .ic svg { width:22px; height:22px; }
+.modes b { display:block; font-size:15px; line-height:21px; font-weight:700; color:var(--ink); }
+.modes small { display:block; font-size:13px; line-height:18px; color:var(--ink-3); margin-top:1px; }
+.modes button[aria-checked="true"] { background:var(--accent-soft); border-color:color-mix(in srgb, var(--accent) 55%, transparent); }
+.modes button[aria-checked="true"] .ic { background:var(--accent); color:var(--on-accent); }
+.modes button[aria-checked="true"] small { color:var(--ink-2); }
+.sheet .foot { margin:14px 2px 0; font-size:12px; line-height:17px; color:var(--ink-3); }
+/* key-expression sheet */
+.ntop { display:flex; align-items:center; gap:8px; margin:0 0 10px; font-size:12px; line-height:16px; color:var(--ink-3); font-variant-numeric:tabular-nums; }
+.tag { height:22px; padding:0 9px; border-radius:999px; font-size:12px; line-height:22px; font-weight:700; color:var(--accent-ink); background:var(--accent-soft); }
+.ntop .sp { margin-left:auto; }
+.sheet .nchunk { margin:0 0 6px; font-family:var(--font-en); font-size:26px; line-height:34px; font-weight:400; color:var(--ink); letter-spacing:-0.01em; text-wrap:balance; }
+.nko { margin:0 0 14px; font-family:var(--font-ko); font-size:17px; line-height:25px; font-weight:600; color:var(--accent-ink); }
+.nsec { margin:0 0 12px; }
+.nsec h4 { margin:0 0 2px; font-size:12px; line-height:16px; font-weight:600; color:var(--ink-3); }
+.nsec p { margin:0; font-family:var(--font-ko); font-size:15px; line-height:23px; color:var(--ink-2); word-break:keep-all; }
+.nex { margin:4px 0 0; padding:10px 14px; border-radius:12px; background:var(--chip); }
+.nex .e { font-family:var(--font-en); font-size:16px; line-height:24px; color:var(--ink); }
+.nex .k { font-family:var(--font-ko); font-size:14px; line-height:21px; color:var(--ink-3); margin-top:2px; }
+.nsec .nsrc { margin:0 0 14px; font-family:var(--font-en); font-size:15px; line-height:23px; color:var(--ink-3); }
+.nsrc mark { background:none; color:var(--ink); text-decoration:underline dotted var(--accent) 2px; text-underline-offset:4px; }
+.nacts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
+/* when the note sheet scrolls (landscape) the actions stay reachable */
+.sheet:not(.fit) .nacts { position:sticky; bottom:calc(-1 * (var(--safe-b) + 12px)); margin:8px -20px calc(-1 * (var(--safe-b) + 12px));
+  padding:10px 20px calc(var(--safe-b) + 12px); background:var(--surface); box-shadow:0 -1px 0 var(--line); }
+.nacts .pri { grid-column:1 / -1; height:48px; border-radius:14px; background:var(--accent); color:var(--on-accent); font-size:15px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 160ms ease-out, filter 90ms; }
+.nacts .pri svg { width:18px; height:18px; }
+.nacts .pri:active { transform:scale(.98); filter:brightness(.95); transition-duration:60ms; }
+.nacts .chip { height:44px; }
+.nacts .chip svg { width:16px; height:16px; }
+#nSave.on svg { fill:currentColor; }
+/* 내 표현 list */
+#mineList { display:flex; flex-direction:column; gap:2px; margin:0 -8px; }
+.mi { display:block; width:100%; padding:10px 8px; border-radius:12px; text-align:left; transition:background-color 90ms; }
+.mi:active { background:var(--press); }
+.mi .c { font-family:var(--font-en); font-size:17px; line-height:24px; color:var(--ink); }
+.mi .k { font-family:var(--font-ko); font-size:14px; line-height:20px; color:var(--ink-2); margin-top:1px; }
+.mi .m { font-size:11.5px; line-height:16px; color:var(--ink-3); margin-top:3px; font-variant-numeric:tabular-nums; }
+.mempty { padding:18px 4px 6px; font-size:14px; line-height:21px; color:var(--ink-3); text-align:center; text-wrap:balance; }
+/* install hint */
+.steps { margin:0; padding:0; list-style:none; counter-reset:st; }
+.steps li { position:relative; padding:8px 0 8px 36px; font-size:15px; line-height:22px; color:var(--ink-2); counter-increment:st; }
+.steps li::before { content:counter(st); position:absolute; left:0; top:7px; width:24px; height:24px; border-radius:50%; background:var(--accent-soft);
+  color:var(--accent-ink); font-size:13px; line-height:24px; font-weight:700; text-align:center; }
+.steps b { color:var(--ink); }
+.steps svg { width:18px; height:18px; vertical-align:-3px; color:var(--accent-ink); }
+
+/* ---------- landscape: split view (video + controls left, script right) ---------- */
+@media (orientation: landscape) and (min-aspect-ratio: 13/10) {
+  #app { grid-template-columns:minmax(0,58fr) minmax(0,42fr); grid-template-rows:minmax(0,1fr) auto auto;
+    grid-template-areas:"stage mid" "seek mid" "dock mid"; }
+  #stage { display:grid; place-items:center; min-height:0; container-type:size;
+    padding:env(safe-area-inset-top) 0 0 env(safe-area-inset-left); }
+  #vbox { width:min(100cqw, 100cqh * var(--arn, 1.7778)); max-height:none; }
+  #seek { padding-left:calc(14px + env(safe-area-inset-left)); height:24px; }
+  #seek .tm, #track { line-height:24px; height:24px; }
+  #mid { border-left:1px solid var(--line); margin-right:env(safe-area-inset-right); }
+  #list { padding-top:max(10px, env(safe-area-inset-top)); }
+  #dock { padding:4px 14px max(6px, env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left)); box-shadow:0 -1px 0 var(--line); }
+  #ctl { height:44px; margin-bottom:2px; }
+  #ctl .chip { height:44px; } #ctl .seg button { height:40px; }
+  #bar { height:56px; }
+  .sheet { max-width:520px; }
+}
+
+/* narrow viewports = large page zoom / Android font scaling (130 % -> 317 px, 200 % -> 206 px wide): the dock shrinks, nothing overlaps */
+@media (max-width: 360px), (orientation: landscape) and (min-aspect-ratio: 13/10) and (max-width: 640px) {
+  #dock { padding-left:8px; padding-right:8px; }
+  #ctl { gap:6px; }
+  #cSpeed { width:56px; padding:0 4px; }
+  .seg button { font-size:13px; letter-spacing:-0.02em; }
+  .tg { width:100%; max-width:72px; }
+  .tg .lb { max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+}
+@media (max-width: 300px) {
+  #dock { padding-left:4px; padding-right:4px; }
+  #ctl { gap:4px; }
+  #cSpeed { width:46px; font-size:13px; }
+  .seg { gap:0; }
+  .seg button { font-size:12px; letter-spacing:-0.04em; padding:0 1px; }
+  .tb:not(#bPlay) { width:100%; max-width:48px; }
+  .tb:not(#bPlay) svg.i { left:50% !important; margin-left:-12px; }
+  .tg .lb { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+  .nt { padding:6px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row, .row::before, .row.on .w, .row.on .w.cur, .hide-en .row.rv-en .en .w, .hide-en .row.on .en .w::after, .chip, .tb, .tg, #thumb,
+  .speeds button, .seg button, #bPlay svg.i, .vlayer, #vpause .disc, #bAa, .sw, .sw::after { transition-duration:0ms !important; }
+  .row.on, .bdg .st.pop svg, .coach, #endb, .buffering .row.on .w.cur { animation:none !important; }
+  .sheet, .sheet.show { transform:none !important; opacity:0; transition:opacity 120ms ease-out, visibility 0s 120ms !important; }
+  .sheet.show { opacity:1; transition:opacity 120ms ease-out !important; }
+  #pill, #pill.show { transform:translate(-50%, 0) !important; transition:opacity 120ms ease-out, visibility 0s 120ms !important; }
+  #toast, #toast.show { transform:translate(-50%, 0) !important; transition:opacity 120ms ease-out, visibility 0s 120ms !important; }
+  #pill.show, #toast.show { transition:opacity 120ms ease-out !important; }
+  #cdBar { display:none; } #bPlay svg.cd { display:none; } .say .num { display:inline; }
+  #bNext.cue::before { animation:none; opacity:.6; } .row.held .hold { animation:none; }
+  .modes button, .nacts .pri, .lrow, .tg .dc svg, #bPrev svg.i, .ts { transition-duration:0ms !important; }
+  #vload .shim::after { animation:none; left:30%; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <section id="stage">
+    <div id="vbox">
+      <video id="v" playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback></video>
+      <div id="vload" class="vlayer show"><div class="t" id="ttl"></div><div class="st" id="sttl"></div><div class="cap" id="vcap">영상 불러오는 중</div><div class="shim"></div></div>
+      <div id="vbuf" class="vlayer"><div class="disc"><div class="spin"></div></div></div>
+      <div id="vpause" class="vlayer"><div class="disc"><svg class="i" viewBox="0 0 24 24"><use href="#ic-play" id="vpUse"/></svg></div></div>
+      <div id="verr" class="vlayer" role="alert">
+        <svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 3l18 18"/></svg>
+        <div class="t" id="errT">영상 파일을 찾을 수 없어요</div>
+        <div class="b" id="errB">같은 폴더에 <code id="vname">video.mp4</code>가 있어야 해요</div>
+        <button type="button" id="pick">영상 직접 선택</button>
+        <button type="button" id="retry" hidden>다시 시도</button>
+        <input type="file" id="file" accept="video/*" hidden>
+      </div>
+      <a id="bHome" href="../" aria-label="목록으로"><svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>
+      <button type="button" id="bAa" aria-label="보기 설정" aria-haspopup="dialog"><svg class="i" viewBox="0 0 24 24"><path d="M2.5 19L8 5h1l5.5 14M4.6 14h7.8"/><path d="M14 19l3.5-8.5h1L22 19M15.3 16h5.4"/></svg></button>
+    </div>
+  </section>
+
+  <div id="seek" role="slider" aria-label="재생 위치" aria-valuemin="0" tabindex="0">
+    <span class="tm" id="tCur" aria-hidden="true">0:00</span>
+    <div id="track"><div class="rail"></div><div class="fill" id="fill"></div><div id="ticks"></div><div id="thumb"></div><div id="bubble">0:00</div></div>
+    <span class="tm" id="tDur" aria-hidden="true">0:00</span>
+  </div>
+
+  <div id="mid">
+    <div id="list" role="list" aria-label="스크립트"></div>
+    <div id="empty"><div class="t">자막이 없어요</div><div class="b">영상만 재생할 수 있어요.</div></div>
+    <button type="button" id="pill" aria-label="지금 위치로 이동"><span><svg class="i" viewBox="0 0 24 24"><path id="pillArrow" d="M12 5v14M6 13l6 6 6-6"/></svg>지금 위치</span></button>
+    <div id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastAct" hidden></button></div>
+  </div>
+
+  <footer id="dock">
+    <div id="ctl">
+      <div class="seg" id="segHide" role="radiogroup" aria-label="보기">
+        <button type="button" role="radio" data-v="0">모두</button><button type="button" role="radio" data-v="1" aria-label="영어만 (한글 가림)">영어만</button><button type="button" role="radio" data-v="2" aria-label="한글만 (영어 가림)">한글만</button>
+      </div>
+      <button type="button" class="chip" id="cSpeed" aria-haspopup="dialog" aria-label="재생 속도"><span id="speedLbl">1×</span></button>
+    </div>
+    <div id="bar">
+      <div id="transport">
+        <button type="button" class="tg" id="cLoop" aria-pressed="false"><span class="dc"><svg class="i sel" viewBox="0 0 24 24"><use href="#ic-loop1"/></svg></span><span class="lb">한 문장 반복</span></button>
+        <button type="button" class="tb" id="bPrev" aria-label="이전 문장"><svg class="i pv" viewBox="0 0 24 24"><use href="#ic-prev"/></svg><svg class="i rp" viewBox="0 0 24 24"><use href="#ic-replay"/></svg></button>
+        <button type="button" class="tb" id="bPlay" aria-label="재생" data-s="play"><span class="ring"></span>
+          <svg class="cd" viewBox="0 0 66 66" aria-hidden="true"><circle class="bg" cx="33" cy="33" r="31.5"/><circle class="fg" cx="33" cy="33" r="31.5"/></svg>
+          <svg class="i pi" viewBox="0 0 24 24"><use href="#ic-play"/></svg>
+          <svg class="i pp" viewBox="0 0 24 24"><use href="#ic-pause"/></svg>
+          <svg class="i pr" viewBox="0 0 24 24"><use href="#ic-replay"/></svg>
+          <svg class="i pk" viewBox="0 0 24 24"><use href="#ic-folder"/></svg></button>
+        <button type="button" class="tb" id="bNext" aria-label="다음 문장"><svg class="i" viewBox="0 0 24 24"><use href="#ic-next"/></svg></button>
+        <button type="button" class="tg" id="cMode" aria-haspopup="dialog" aria-label="재생 방식: 연속 재생"><span class="dc"><svg class="i sel" viewBox="0 0 24 24" data-m="cont"><use href="#ic-cont"/></svg><svg class="i" viewBox="0 0 24 24" data-m="stop"><use href="#ic-stop1"/></svg><svg class="i" viewBox="0 0 24 24" data-m="shadow"><use href="#ic-mic"/></svg></span><span class="lb" id="modeLbl">연속 재생</span></button>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<div id="scrim"></div>
+<div class="sheet" id="shSpeed" role="dialog" aria-modal="true" aria-labelledby="hSpeed" tabindex="-1">
+  <div class="handle"></div><h2 id="hSpeed">재생 속도</h2>
+  <div class="speeds" role="radiogroup" aria-labelledby="hSpeed"></div>
+  <div class="speedcap" aria-hidden="true"><span>느리게</span><span>빠르게</span></div>
+</div>
+<div class="sheet" id="shAa" role="dialog" aria-modal="true" aria-labelledby="hAa" tabindex="-1">
+  <div class="handle"></div><h2 id="hAa">보기 설정</h2><div class="sub" id="aaTitle"></div>
+  <h3 id="hFont">글자 크기</h3>
+  <div class="seg" id="segFont" role="radiogroup" aria-labelledby="hFont">
+    <button type="button" role="radio" data-v="s" aria-label="작게"><span class="smp" style="font-size:17px"><span class="e">Aa</span> <span class="k">가</span></span><span class="lb">작게</span></button>
+    <button type="button" role="radio" data-v="m" aria-label="보통"><span class="smp" style="font-size:19px"><span class="e">Aa</span> <span class="k">가</span></span><span class="lb">보통</span></button>
+    <button type="button" role="radio" data-v="l" aria-label="크게"><span class="smp" style="font-size:22px"><span class="e">Aa</span> <span class="k">가</span></span><span class="lb">크게</span></button>
+  </div>
+  <h3 id="hTheme">테마</h3>
+  <div class="seg" id="segTheme" role="radiogroup" aria-labelledby="hTheme">
+    <button type="button" role="radio" data-v="system">시스템</button><button type="button" role="radio" data-v="light">라이트</button><button type="button" role="radio" data-v="dark">다크</button>
+  </div>
+  <button type="button" class="swrow" id="swCrop" role="switch" aria-checked="true" hidden><span>영상 속 자막 가리기</span><span class="sw" aria-hidden="true"></span></button>
+  <div class="lrows">
+    <button type="button" class="lrow" id="rMine"><span class="ic"><svg class="i" viewBox="0 0 24 24"><use href="#ic-star"/></svg></span><span class="tx">내 표현<small>저장한 핵심 표현 모아 보기</small></span><span class="val" id="mineCnt">0</span><svg class="i chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button type="button" class="lrow" id="rInstall" hidden><span class="ic"><svg class="i" viewBox="0 0 24 24"><use href="#ic-install"/></svg></span><span class="tx">앱으로 설치<small>홈 화면에서 바로 열고, 전체 화면으로 봐요</small></span><svg class="i chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+  </div>
+</div>
+<div class="sheet" id="shMode" role="dialog" aria-modal="true" aria-labelledby="hMode" tabindex="-1">
+  <div class="handle"></div><h2 id="hMode">재생 방식</h2>
+  <div class="modes" role="radiogroup" aria-labelledby="hMode">
+    <button type="button" role="radio" data-v="cont"><span class="ic"><svg class="i" viewBox="0 0 24 24"><use href="#ic-cont"/></svg></span><span><b>연속 재생</b><small>영상처럼 끝까지 이어서 들어요</small></span></button>
+    <button type="button" role="radio" data-v="stop"><span class="ic"><svg class="i" viewBox="0 0 24 24"><use href="#ic-stop1"/></svg></span><span><b>한 문장씩 멈춤</b><small>한 문장 끝나면 멈춰요. 다음 ▸을 누르면 넘어가요</small></span></button>
+    <button type="button" role="radio" data-v="shadow"><span class="ic"><svg class="i" viewBox="0 0 24 24"><use href="#ic-mic"/></svg></span><span><b>따라 말하기</b><small>문장마다 따라 말할 시간을 주고 자동으로 넘어가요</small></span></button>
+  </div>
+  <p class="foot">한 문장 반복(↻)은 어느 방식과도 함께 쓸 수 있어요.</p>
+</div>
+<div class="sheet" id="shNote" role="dialog" aria-modal="true" aria-labelledby="nChunk" tabindex="-1">
+  <div class="handle"></div>
+  <div class="ntop"><span class="tag" id="nType"></span><span class="sp" id="nWhere"></span></div>
+  <h2 class="nchunk" id="nChunk" lang="en"></h2>
+  <p class="nko" id="nKo"></p>
+  <div class="nsec" id="nNu"><h4>뉘앙스</h4><p></p></div>
+  <div class="nsec" id="nUse"><h4>이렇게 써요</h4><p></p></div>
+  <div class="nsec" id="nEx"><h4>다른 예문</h4><div class="nex"><div class="e" lang="en"></div><div class="k"></div></div></div>
+  <div class="nsec"><h4>이 영상에서</h4><p class="nsrc" id="nSrc" lang="en"></p></div>
+  <div class="nacts">
+    <button type="button" class="pri" id="nPlay"><svg class="i" viewBox="0 0 24 24"><use href="#ic-play"/></svg>이 부분 듣기</button>
+    <button type="button" class="chip" id="nFrom"><svg class="i" viewBox="0 0 24 24"><use href="#ic-replay"/></svg>문장 처음부터</button>
+    <button type="button" class="chip" id="nSave" aria-pressed="false"><svg class="i" viewBox="0 0 24 24"><use href="#ic-star"/></svg><span>내 표현에 저장</span></button>
+  </div>
+</div>
+<div class="sheet" id="shMine" role="dialog" aria-modal="true" aria-labelledby="hMine" tabindex="-1">
+  <div class="handle"></div><h2 id="hMine">내 표현</h2>
+  <div id="mineList"></div>
+</div>
+<div class="sheet" id="shInstall" role="dialog" aria-modal="true" aria-labelledby="hInstall" tabindex="-1">
+  <div class="handle"></div><h2 id="hInstall">홈 화면에 추가하기</h2>
+  <ol class="steps" id="instSteps"></ol>
+  <p class="foot">추가하면 앱처럼 전체 화면으로 열리고, 목록과 모든 영상을 바로 볼 수 있어요.</p>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <path id="ic-play" d="M8 5.6v12.8a1 1 0 0 0 1.52.85l10.2-6.4a1 1 0 0 0 0-1.7L9.52 4.75A1 1 0 0 0 8 5.6z" fill="currentColor" stroke="none"/>
+    <g id="ic-pause" fill="currentColor" stroke="none"><rect x="6.5" y="5" width="4" height="14" rx="1.2"/><rect x="13.5" y="5" width="4" height="14" rx="1.2"/></g>
+    <g id="ic-prev" fill="currentColor" stroke="none"><rect x="5" y="5" width="2.5" height="14" rx="1"/><path d="M19 6.4v11.2a1 1 0 0 1-1.56.83l-8.2-5.6a1.1 1.1 0 0 1 0-1.82l8.2-5.6A1 1 0 0 1 19 6.4z"/></g>
+    <g id="ic-next" fill="currentColor" stroke="none"><rect x="16.5" y="5" width="2.5" height="14" rx="1"/><path d="M5 6.4v11.2a1 1 0 0 0 1.56.83l8.2-5.6a1.1 1.1 0 0 0 0-1.82l-8.2-5.6A1 1 0 0 0 5 6.4z"/></g>
+    <g id="ic-loop1"><path d="M4 11V9a3 3 0 0 1 3-3h13"/><path d="M17 3l3 3-3 3"/><path d="M20 13v2a3 3 0 0 1-3 3H4"/><path d="M7 21l-3-3 3-3"/><path d="M11 10.6l1.5-1.1v5" stroke-width="1.6"/></g>
+    <g id="ic-replay"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3.5 3.5V8H8"/></g>
+    <g id="ic-mic"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></g>
+    <path id="ic-folder" d="M3 7.5A2.5 2.5 0 0 1 5.5 5h3.6l2.2 2.2h7.2A2.5 2.5 0 0 1 21 9.7v7.8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/>
+    <g id="ic-cont"><path d="M4 7h11M4 12h11M4 17h7"/><path d="M15 14.5v5.2l4.4-2.6z" fill="currentColor"/></g>
+    <g id="ic-stop1"><path d="M4 7h12M4 12h9"/><path d="M4 17h6"/><rect x="15" y="13.5" width="2.2" height="7" rx=".8" fill="currentColor" stroke="none"/><rect x="18.8" y="13.5" width="2.2" height="7" rx=".8" fill="currentColor" stroke="none"/></g>
+    <g id="ic-install"><path d="M12 3.5v11M7.5 10.5L12 15l4.5-4.5"/><path d="M5 15.5v2A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-2"/></g>
+    <g id="ic-share"><path d="M12 15V4M8 7.5L12 3.5l4 4"/><path d="M8 10.5H6.5A1.5 1.5 0 0 0 5 12v7.5A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V12a1.5 1.5 0 0 0-1.5-1.5H16"/></g>
+    <g id="ic-menu"><path d="M4 7h16M4 12h16M4 17h16"/></g>
+    <path id="ic-star" d="M12 3.5l2.6 5.3 5.8.85-4.2 4.1 1 5.8L12 16.8l-5.2 2.75 1-5.8-4.2-4.1 5.8-.85z"/>
+  </defs>
+</svg>
+
+<script id="data" type="application/json">{"id":"2120395898970931201","title":"일론 머스크: 스타십은 왜 스테인리스강인가","subtitle":"탄소섬유 대신 극저온 스테인리스강을 택한 이유","source":"https://x.com/huxlab/status/2120396302106386937","video":"video.mp4","w":1280,"h":720,"duration":258.485,"captionBand":0.76,"sentences":[{"s":0.14,"e":4.191,"en":"So the, the, it was because we were making very slow progress with with carbon fiber.","ko":"그러니까, 탄소섬유로는 진척이 너무 더뎠기 때문이었어요.","w":[["So",0.14,0.201],["the,",0.702,0.782],["the,",0.782,0.842],["it",0.842,0.902],["was",0.902,1.003],["because",1.384,1.624],["we",1.624,1.684],["were",1.684,1.805],["making",1.805,2.125],["very",2.286,2.466],["slow",2.466,2.667],["progress",2.667,3.108],["with",3.108,3.288],["with",3.469,3.609],["carbon",3.609,3.87],["fiber.",3.87,4.191]],"spk":"musk","notes":[{"a":8,"b":11,"text":"making very slow progress","type":"collocation","ko":"진척이 아주 더디다","nuance":"업무·프로젝트 얘기에서 아주 자주 쓰는 표현이에요.","use":"make progress가 기본형이고 slow/good/real 같은 형용사를 넣어요.","ex":"We're making good progress on the new design.","ex_ko":"새 설계 작업은 잘 진행되고 있어요."}]},{"s":4.191,"e":6.0,"en":"I was like, okay, we've we've got to try something else.","ko":"그래서 '좋아, 뭔가 다른 걸 시도해 봐야겠다' 싶었죠.","w":[["I",4.191,4.231],["was",4.231,4.455],["like,",4.455,4.676],["okay,",4.676,4.897],["we've",4.897,5.037],["we've",5.037,5.157],["got",5.157,5.278],["to",5.278,5.378],["try",5.378,5.579],["something",5.579,5.839],["else.",5.839,6.0]],"spk":"musk","notes":[{"a":0,"b":2,"text":"I was like","type":"discourse","ko":"나는 ~라는 생각이었어","nuance":"구어체에서 당시 속마음이나 반응을 그대로 옮길 때 써요.","use":"I was like, + 그때 한 생각/말 그대로","ex":"I was like, there's no way this is going to work.","ex_ko":"'이게 될 리가 없는데' 싶었죠."},{"a":5,"b":10,"text":"we've got to try something else","type":"phrasal","ko":"뭔가 다른 걸 시도해 봐야 한다","nuance":"have got to는 have to보다 더 구어적이고 절박한 느낌이에요.","use":"we've got to + 동사원형 = 우리 ~해야 해","ex":"We've got to try something else before the deadline.","ex_ko":"마감 전에 다른 방법을 써 봐야 해요."}]},{"s":6.263,"e":16.205,"en":"Now, for the Falcon 9 the, the primary airframe is made of aluminum lithium, which is a very very good strength to weight.","ko":"지금 팰컨 9의 주 기체는 알루미늄-리튬 합금으로 만들어지는데, 중량 대비 강도가 아주 뛰어나요.","w":[["Now,",6.263,6.384],["for",6.724,6.945],["the",7.185,7.306],["Falcon",8.328,8.649],["9",8.649,8.949],["the,",9.611,9.711],["the",10.112,10.232],["primary",10.232,10.573],["airframe",10.753,11.314],["is",11.314,11.555],["made",11.835,12.016],["of",12.016,12.096],["aluminum",12.096,12.477],["lithium,",12.477,12.817],["which",13.539,13.759],["is",13.759,14.04],["a",14.04,14.06],["very",14.421,14.621],["very",14.782,15.002],["good",15.002,15.142],["strength",15.142,15.383],["to",15.383,15.443],["weight.",15.443,16.205]],"spk":"musk","notes":[{"a":7,"b":8,"text":"primary airframe","type":"term","ko":"주 기체 구조","nuance":"항공우주 분야의 기술 용어예요.","use":"the primary airframe / structure 처럼 '주요 구조물'을 가리켜요.","ex":"","ex_ko":""},{"a":20,"b":22,"text":"strength to weight","type":"term","ko":"중량 대비 강도","nuance":"재료공학에서 핵심 지표를 말하는 표현이에요.","use":"strength-to-weight ratio 형태로 가장 많이 써요.","ex":"Titanium has an excellent strength-to-weight ratio.","ex_ko":"티타늄은 중량 대비 강도가 아주 뛰어나요."}]},{"s":16.928,"e":24.166,"en":"And, actually it has about the same, maybe maybe better strength to weight for its application than carbon fiber.","ko":"사실 그 용도로는 중량 대비 강도가 탄소섬유와 비슷하거나, 어쩌면 더 나을 수도 있어요.","w":[["And,",16.928,17.229],["actually",18.291,18.572],["it",18.793,18.913],["has",18.913,19.093],["about",20.236,20.437],["the",20.437,20.537],["same,",20.537,20.758],["maybe",20.758,21.058],["maybe",21.058,21.339],["better",21.339,21.6],["strength",21.6,21.86],["to",21.86,21.941],["weight",21.941,22.121],["for",22.342,22.522],["its",22.522,22.682],["application",22.682,23.384],["than",23.384,23.585],["carbon",23.585,23.885],["fiber.",23.885,24.166]],"spk":"musk","notes":[{"a":4,"b":6,"text":"about the same","type":"collocation","ko":"거의 비슷한","nuance":"정확히 같진 않지만 차이가 크지 않다는 느낌이에요.","use":"about the same + (명사) as ~ 로 비교할 때 써요.","ex":"The two options cost about the same.","ex_ko":"두 옵션은 가격이 거의 비슷해요."},{"a":13,"b":15,"text":"for its application","type":"collocation","ko":"그 용도로는","nuance":"같은 재료라도 쓰임새에 따라 평가가 달라진다는 뉘앙스예요.","use":"for this/its application = 이 용도에 한해서","ex":"It's overkill for this application.","ex_ko":"이 용도로는 과한 사양이에요."}]},{"s":24.61,"e":26.261,"en":"But aluminum lithium is very difficult to work with.","ko":"그런데 알루미늄-리튬은 다루기가 굉장히 까다로워요.","w":[["But",24.61,24.731],["aluminum",24.731,25.012],["lithium",25.012,25.293],["is",25.293,25.373],["very",25.373,25.534],["difficult",25.534,25.775],["to",25.775,25.855],["work",25.855,26.056],["with.",26.056,26.261]],"spk":"musk","notes":[{"a":5,"b":8,"text":"difficult to work with","type":"phrasal","ko":"다루기 까다로운","nuance":"재료·도구뿐 아니라 사람에게도 쓰는 일상 표현이에요.","use":"be easy/difficult to work with + 대상","ex":"He's very easy to work with.","ex_ko":"그 사람은 같이 일하기 정말 편해요."}]},{"s":26.261,"e":28.868,"en":"In order to weld it you have to do something called friction stir welding,","ko":"용접하려면 '마찰 교반 용접'이라는 걸 해야 하는데,","w":[["In",26.261,26.381],["order",26.381,26.662],["to",26.662,26.782],["weld",26.983,27.244],["it",27.244,27.364],["you",27.364,27.424],["have",27.424,27.544],["to",27.544,27.625],["do",27.625,27.725],["something",27.725,27.925],["called",27.925,28.066],["friction",28.066,28.407],["stir",28.407,28.587],["welding,",28.587,28.868]],"spk":"musk","notes":[{"a":9,"b":10,"text":"something called","type":"discourse","ko":"~라고 하는 것","nuance":"상대가 모를 수 있는 용어를 소개할 때 자연스럽게 써요.","use":"something called + 용어","ex":"There's something called technical debt.","ex_ko":"'기술 부채'라는 게 있어요."},{"a":11,"b":13,"text":"friction stir welding","type":"term","ko":"마찰 교반 용접","nuance":"금속을 녹이지 않고 마찰열로 접합하는 용접 기술이에요.","use":"do / use friction stir welding 처럼 써요.","ex":"","ex_ko":""}]},{"s":28.868,"e":32.086,"en":"where you join the you join the metal without it entering the liquid phase.","ko":"금속을 액체 상태로 녹이지 않고 접합하는 방식이에요.","w":[["where",28.868,28.908],["you",28.908,28.948],["join",28.948,28.988],["the",29.153,29.233],["you",30.077,30.178],["join",30.178,30.378],["the",30.378,30.439],["metal",30.439,30.66],["without",30.66,31.061],["it",31.061,31.182],["entering",31.182,31.463],["the",31.463,31.544],["liquid",31.544,31.785],["phase.",31.785,32.086]],"spk":"musk","notes":[{"a":11,"b":13,"text":"the liquid phase","type":"term","ko":"액체 상태","nuance":"물리·재료 분야에서 상(phase)을 말할 때 쓰는 용어예요.","use":"enter the liquid/solid phase = 액체/고체 상태가 되다","ex":"","ex_ko":""}]},{"s":33.493,"e":38.189,"en":"So it's kind of wild that you could do that, but with a, this particular type of welding you can do that.","ko":"그게 가능하다는 게 좀 놀랍지만, 이 특수한 용접 방식으로는 할 수 있어요.","w":[["So",33.493,33.594],["it's",34.035,34.216],["kind",34.216,34.356],["of",34.356,34.396],["wild",34.396,34.557],["that",34.557,34.677],["you",34.677,34.778],["could",34.778,34.938],["do",34.938,35.099],["that,",35.099,35.339],["but",35.741,35.921],["with",35.921,36.062],["a,",36.062,36.082],["this",36.323,36.483],["particular",36.483,36.804],["type",36.804,37.105],["of",37.105,37.246],["welding",37.246,37.687],["you",37.687,37.788],["can",37.788,37.908],["do",37.908,38.028],["that.",38.028,38.189]],"spk":"musk","notes":[{"a":1,"b":4,"text":"it's kind of wild","type":"discourse","ko":"좀 놀랍다, 신기하다","nuance":"wild는 구어에서 '말도 안 되게 신기한'이라는 뜻이에요.","use":"It's kind of wild that + 문장","ex":"It's kind of wild that this actually works.","ex_ko":"이게 진짜 된다는 게 좀 신기해요."},{"a":13,"b":16,"text":"this particular type of","type":"collocation","ko":"이 특정한 종류의","nuance":"여러 방식 중 하나를 콕 집어 말할 때 써요.","use":"this particular type of + 명사","ex":"This particular type of battery lasts longer.","ex_ko":"이 특정 배터리 종류가 더 오래가요."}]},{"s":40.195,"e":47.808,"en":"But, it's, it's very difficult to like say, let's say you want to make a modification or attach something to aluminum lithium.","ko":"그런데 예를 들어 알루미늄-리튬에 뭔가를 수정하거나 부착하려고 하면 아주 어려워요.","w":[["But,",40.195,40.315],["it's,",40.997,41.778],["it's",41.778,41.898],["very",41.898,42.018],["difficult",42.018,42.299],["to",42.299,42.379],["like",42.379,42.579],["say,",42.579,42.699],["let's",42.86,43.0],["say",43.0,43.1],["you",43.1,43.18],["want",43.18,43.34],["to",43.34,43.461],["make",43.461,43.621],["a",43.621,43.701],["modification",43.701,44.462],["or",44.462,44.542],["attach",44.542,44.943],["something",44.943,45.304],["to",45.544,45.664],["aluminum",47.187,47.507],["lithium.",47.507,47.808]],"spk":"musk","notes":[{"a":8,"b":9,"text":"let's say","type":"discourse","ko":"예를 들어 ~라고 해 봐요","nuance":"가정을 세워 설명을 시작할 때 아주 자주 써요.","use":"Let's say + 가정 상황","ex":"Let's say you want to change the layout.","ex_ko":"예를 들어 레이아웃을 바꾸고 싶다고 해 봐요."},{"a":13,"b":15,"text":"make a modification","type":"collocation","ko":"수정하다, 개조하다","nuance":"modify보다 약간 격식 있고 설명적인 느낌이에요.","use":"make a modification to + 대상","ex":"We had to make a few modifications to the design.","ex_ko":"설계를 몇 군데 수정해야 했어요."},{"a":17,"b":19,"text":"attach something to","type":"collocation","ko":"~에 뭔가를 부착하다","nuance":"공학·조립 맥락에서 자주 나와요.","use":"attach A to B","ex":"Attach the sensor to the frame.","ex_ko":"센서를 프레임에 부착하세요."}]},{"s":47.808,"e":52.077,"en":"You you now have to use mechanical attachment with seals; you can't, weld it on.","ko":"이제는 실링을 넣은 기계식 체결을 해야 하고, 용접으로 붙일 수가 없어요.","w":[["You",47.808,48.031],["you",48.031,48.131],["now",48.131,48.311],["have",48.311,48.491],["to",48.491,48.591],["use",48.591,48.732],["mechanical",48.732,49.152],["attachment",49.152,49.653],["with",49.653,49.813],["seals;",49.813,50.134],["you",50.875,50.995],["can't,",50.995,51.236],["weld",51.656,51.837],["it",51.837,51.977],["on.",51.977,52.077]],"spk":"musk","notes":[{"a":6,"b":7,"text":"mechanical attachment","type":"term","ko":"기계식 결합","nuance":"볼트·리벳 등으로 붙이는 방식을 말해요.","use":"mechanical attachment / fastening 처럼 써요.","ex":"","ex_ko":""},{"a":12,"b":14,"text":"weld it on","type":"phrasal","ko":"용접해서 붙이다","nuance":"on이 '덧붙인다'는 느낌을 더해 줘요.","use":"weld + 대상 + on","ex":"They welded a bracket on.","ex_ko":"브래킷을 용접해서 붙였어요."}]},{"s":54.0,"e":61.119,"en":"So I, I, I, we want to, I want to avoid using aluminum lithium for the primary structure for, for Starship.","ko":"그래서 스타십의 주 구조물에는 알루미늄-리튬을 쓰고 싶지 않았어요.","w":[["So",54.0,54.08],["I,",54.501,54.662],["I,",54.662,54.682],["I,",55.183,55.223],["we",55.223,55.263],["want",55.263,55.464],["to,",55.464,55.905],["I",55.905,55.945],["want",55.945,56.086],["to",56.086,56.166],["avoid",56.166,56.446],["using",56.446,56.687],["aluminum",57.188,57.489],["lithium",57.489,57.77],["for",57.77,57.89],["the",57.89,57.971],["primary",57.971,58.291],["structure",58.291,58.713],["for,",59.294,59.575],["for",60.518,60.658],["Starship.",60.658,61.119]],"spk":"musk","notes":[{"a":10,"b":11,"text":"avoid using","type":"collocation","ko":"~ 쓰는 걸 피하다","nuance":"avoid 뒤에는 항상 -ing가 온다는 게 포인트예요.","use":"avoid + -ing","ex":"I try to avoid using jargon in meetings.","ex_ko":"회의에서는 전문 용어를 안 쓰려고 해요."},{"a":16,"b":17,"text":"primary structure","type":"term","ko":"주 구조물","nuance":"기체의 하중을 받는 핵심 구조를 뜻해요.","use":"the primary structure of + 대상","ex":"","ex_ko":""}]},{"s":62.722,"e":71.703,"en":"And, and, and there was this very special grade of carbon fiber that, that had, you know, very good mass properties.","ko":"그리고 질량 특성이 아주 뛰어난 특수 등급의 탄소섬유가 있었어요.","w":[["And,",62.722,63.003],["and,",64.446,64.586],["and",64.586,64.686],["there",64.686,64.826],["was",64.826,64.987],["this",64.987,65.207],["very",65.207,65.447],["special",65.828,66.149],["grade",66.149,66.389],["of",66.389,66.489],["carbon",67.912,68.152],["fiber",68.152,68.473],["that,",68.473,68.593],["that",68.794,68.954],["had,",69.555,69.715],["you",70.096,70.176],["know,",70.176,70.297],["very",70.457,70.657],["good",70.657,70.878],["mass",70.878,71.118],["properties.",71.118,71.703]],"spk":"musk","notes":[{"a":7,"b":11,"text":"special grade of carbon fiber","type":"collocation","ko":"특수 등급의 탄소섬유","nuance":"grade는 재료의 품질 등급을 말해요.","use":"a (special/high) grade of + 재료","ex":"They use a higher grade of steel.","ex_ko":"더 높은 등급의 강철을 써요."},{"a":19,"b":20,"text":"mass properties","type":"term","ko":"질량 특성","nuance":"무게 측면에서의 재료 성능을 뜻하는 기술 표현이에요.","use":"good/excellent mass properties","ex":"","ex_ko":""}]},{"s":71.703,"e":76.71,"en":"So with rock rocket, you're really trying to maximize the percentage of the of the rocket that is propellant,","ko":"로켓에서는 전체 중 추진제가 차지하는 비율을 최대한 높이려고 하잖아요,","w":[["So",71.703,71.763],["with",72.185,72.305],["rock",72.305,72.647],["rocket,",72.647,72.888],["you're",72.888,73.008],["really",73.008,73.169],["trying",73.169,73.349],["to",73.349,73.39],["maximize",74.153,74.594],["the",74.594,74.715],["percentage",74.715,75.036],["of",75.036,75.076],["the",75.076,75.136],["of",75.337,75.438],["the",75.438,75.518],["rocket",75.679,75.96],["that",75.96,76.1],["is",76.1,76.201],["propellant,",76.201,76.71]],"spk":"musk","notes":[{"a":8,"b":10,"text":"maximize the percentage","type":"collocation","ko":"비율을 최대화하다","nuance":"목표를 수치로 말할 때 쓰는 공학적인 표현이에요.","use":"maximize the percentage of + 명사","ex":"We want to maximize the percentage of users who return.","ex_ko":"재방문 사용자 비율을 최대화하고 싶어요."},{"a":18,"b":18,"text":"propellant","type":"term","ko":"추진제","nuance":"로켓 연료와 산화제를 통틀어 부르는 말이에요.","use":"the propellant / propellant tank","ex":"","ex_ko":""}]},{"s":76.71,"e":78.301,"en":"minimize the, the, the mass, obviously.","ko":"당연히 질량은 최소화하고요.","w":[["minimize",76.71,77.133],["the,",77.133,77.213],["the,",77.495,77.677],["the",77.677,77.777],["mass,",77.777,78.08],["obviously.",78.08,78.301]],"spk":"musk","notes":[{"a":5,"b":5,"text":"obviously","type":"discourse","ko":"당연히, 말할 것도 없이","nuance":"듣는 사람도 알 거라는 전제를 깔고 덧붙일 때 써요.","use":"문장 끝에 ', obviously'를 붙여 가볍게 강조해요.","ex":"We need to cut costs, obviously.","ex_ko":"당연히 비용은 줄여야죠."}]},{"s":79.049,"e":82.664,"en":"I didn't want to use aluminum and lithium because of the difficulty of friction stir welding,","ko":"마찰 교반 용접이 어려워서 알루미늄-리튬은 쓰고 싶지 않았어요,","w":[["I",79.049,79.069],["didn't",79.069,79.21],["want",79.21,79.31],["to",79.31,79.451],["use",79.451,79.631],["aluminum",79.832,80.053],["and",80.053,80.133],["lithium",80.133,80.435],["because",80.435,80.796],["of",80.796,80.877],["the",80.877,80.957],["difficulty",80.957,81.419],["of",81.419,81.499],["friction",81.841,82.162],["stir",82.162,82.343],["welding,",82.343,82.664]],"spk":"musk"},{"s":84.191,"e":85.942,"en":"especially doing that at at, at scale.","ko":"특히 대규모로 하려면요.","w":[["especially",84.191,84.594],["doing",84.594,84.694],["that",84.694,84.956],["at",84.956,85.197],["at,",85.197,85.298],["at",85.479,85.64],["scale.",85.64,85.942]],"spk":"musk","notes":[{"a":5,"b":6,"text":"at scale","type":"idiom","ko":"대규모로","nuance":"스타트업·제조업에서 '양산 수준으로'라는 뜻으로 자주 써요.","use":"do something at scale / work at scale","ex":"It's hard to do this at scale.","ex_ko":"이걸 대규모로 하긴 어려워요."}]},{"s":85.942,"e":90.486,"en":"It was hard enough at three point six meters in diameter, let alone at nine meters or above.","ko":"지름 3.6미터에서도 충분히 힘들었는데, 9미터 이상은 말할 것도 없죠.","w":[["It",85.942,85.982],["was",85.982,86.069],["hard",86.069,86.23],["enough",86.23,86.431],["at",87.374,87.475],["three",87.475,87.635],["point",87.635,87.856],["six",87.856,88.037],["meters",88.037,88.278],["in",88.278,88.358],["diameter,",88.358,88.76],["let",88.76,88.9],["alone",88.9,89.141],["at",89.141,89.201],["nine",89.623,89.824],["meters",89.824,90.085],["or",90.085,90.185],["above.",90.185,90.486]],"spk":"musk","notes":[{"a":2,"b":3,"text":"hard enough","type":"collocation","ko":"충분히 힘든","nuance":"이미 어려운데 더한 경우와 비교할 때 앞에 깔아 두는 표현이에요.","use":"It was hard enough + 조건, let alone ~","ex":"It was hard enough to get one approved.","ex_ko":"하나 승인받는 것도 충분히 힘들었어요."},{"a":11,"b":12,"text":"let alone","type":"idiom","ko":"~은 말할 것도 없고","nuance":"앞의 것도 어려운데 뒤의 건 더 어렵다는 강조예요.","use":"A, let alone B (주로 부정·어려움 문장 뒤)","ex":"I can't run a mile, let alone a marathon.","ex_ko":"1마일도 못 뛰는데 마라톤은 말할 것도 없죠."},{"a":9,"b":10,"text":"in diameter","type":"collocation","ko":"지름이 ~인","nuance":"크기를 말할 때 쓰는 기본 표현이에요.","use":"숫자 + meters in diameter","ex":"The tank is nine meters in diameter.","ex_ko":"그 탱크는 지름이 9미터예요."}]},{"s":92.133,"e":96.609,"en":"Then I said, well, what about steel?","ko":"그때 제가 '그럼 강철은 어때?'라고 했죠.","w":[["Then",92.133,92.373],["I",95.103,95.183],["said,",95.183,95.324],["well,",95.324,95.525],["what",95.725,95.886],["about",95.886,96.267],["steel?",96.267,96.609]],"spk":"musk","notes":[{"a":4,"b":6,"text":"what about steel","type":"discourse","ko":"~는 어때?","nuance":"대안을 가볍게 제안할 때 쓰는 대표 표현이에요.","use":"What about + 명사/-ing?","ex":"What about using a different vendor?","ex_ko":"다른 업체를 써 보는 건 어때요?"}]},{"s":96.773,"e":105.112,"en":"And, and so the, the, now I, I had, I had a clue here because some of the early US rockets had used very thin steel.","ko":"사실 단서가 있었어요. 초기 미국 로켓 중 일부가 아주 얇은 강철을 썼거든요.","w":[["And,",96.773,96.933],["and",96.933,97.033],["so",97.033,97.073],["the,",97.073,97.174],["the,",97.174,97.494],["now",98.056,98.156],["I,",98.437,98.457],["I",98.677,98.717],["had,",98.717,98.817],["I",98.817,98.838],["had",98.838,98.918],["a",98.918,98.938],["clue",98.938,99.218],["here",99.218,99.419],["because",99.419,99.86],["some",100.06,100.241],["of",100.241,100.341],["the",100.341,100.461],["early",101.263,101.504],["US",102.867,103.108],["rockets",103.108,103.549],["had",103.889,104.13],["used",104.13,104.33],["very",104.33,104.591],["thin",104.591,104.852],["steel.",104.852,105.112]],"spk":"musk","notes":[{"a":10,"b":12,"text":"had a clue","type":"collocation","ko":"단서가 있었다","nuance":"have a clue는 부정문에서 '전혀 모른다'로도 많이 써요.","use":"have a clue (here) / don't have a clue","ex":"I don't have a clue what he means.","ex_ko":"그가 무슨 말을 하는지 전혀 모르겠어요."}]},{"s":105.335,"e":111.787,"en":"The Atlas rockets had used a steel balloon tank, so it's not like steel had never been used before.","ko":"아틀라스 로켓은 강철 풍선 탱크를 썼으니, 강철이 한 번도 안 쓰인 건 아니었어요.","w":[["The",105.335,105.475],["Atlas",105.475,105.775],["rockets",105.775,106.156],["had",106.416,106.617],["used",106.617,106.817],["a",106.817,106.917],["steel",106.917,107.197],["balloon",107.197,107.518],["tank,",107.518,107.818],["so",109.861,109.941],["it's",110.181,110.321],["not",110.321,110.461],["like",110.461,110.702],["steel",110.702,110.882],["had",110.882,110.942],["never",110.942,111.142],["been",111.142,111.343],["used",111.343,111.483],["before.",111.483,111.787]],"spk":"musk","notes":[{"a":10,"b":12,"text":"it's not like","type":"discourse","ko":"~인 것도 아니다","nuance":"오해를 바로잡거나 과장을 누를 때 써요.","use":"It's not like + 문장","ex":"It's not like we haven't tried before.","ex_ko":"우리가 전에 안 해 본 것도 아니잖아요."},{"a":6,"b":8,"text":"steel balloon tank","type":"term","ko":"강철 풍선 탱크","nuance":"내부 압력으로 형태를 유지하는 얇은 탱크예요.","use":"balloon tank (Atlas 로켓의 특징)","ex":"","ex_ko":""}]},{"s":111.787,"e":112.812,"en":"It actually had been used.","ko":"실제로 쓰인 적이 있었죠.","w":[["It",111.787,111.848],["actually",111.848,112.229],["had",112.229,112.37],["been",112.37,112.611],["used.",112.611,112.812]],"spk":"musk"},{"s":114.039,"e":118.034,"en":"When you look at the at the material properties of stainless steel especially,","ko":"특히 스테인리스강의 재료 특성을 보면,","w":[["When",114.039,114.159],["you",114.159,114.239],["look",114.239,114.4],["at",114.4,114.46],["the",114.46,114.52],["at",114.701,114.822],["the",114.822,114.882],["material",114.882,115.183],["properties",115.183,115.705],["of",115.886,116.086],["stainless",116.086,116.448],["steel",116.448,116.729],["especially,",117.672,118.034]],"spk":"musk","notes":[{"a":0,"b":3,"text":"When you look at","type":"discourse","ko":"~를 살펴보면","nuance":"근거를 제시하며 설명을 시작할 때 써요.","use":"When you look at + 명사, ~","ex":"When you look at the numbers, it makes sense.","ex_ko":"숫자를 보면 납득이 가요."},{"a":7,"b":8,"text":"material properties","type":"term","ko":"재료 특성","nuance":"강도·밀도·녹는점 등 재료의 물리적 성질을 말해요.","use":"the material properties of + 재료","ex":"","ex_ko":""}]},{"s":118.619,"e":127.347,"en":"very, if it's been very, like full hard, strain-hardened stainless steel, at cryogenic temperature,","ko":"완전 경화된, 즉 가공 경화된 스테인리스강은 극저온에서","w":[["very,",118.619,118.879],["if",119.66,119.76],["it's",119.76,119.9],["been",119.9,120.04],["very,",121.542,121.762],["like",122.122,122.322],["full",122.322,122.523],["hard,",122.523,122.783],["strain-hardened",123.604,124.224],["stainless",124.464,124.805],["steel,",124.805,125.025],["at",125.906,126.026],["cryogenic",126.206,126.826],["temperature,",126.826,127.347]],"spk":"musk","notes":[{"a":8,"b":8,"text":"strain-hardened","type":"term","ko":"가공 경화된","nuance":"금속을 변형시켜 더 단단하게 만든 상태예요.","use":"strain-hardened / work-hardened steel","ex":"","ex_ko":""},{"a":12,"b":13,"text":"cryogenic temperature","type":"term","ko":"극저온","nuance":"보통 영하 150도 이하의 아주 낮은 온도를 뜻해요.","use":"at cryogenic temperature(s)","ex":"Liquid oxygen is stored at cryogenic temperatures.","ex_ko":"액체 산소는 극저온에서 보관해요."}]},{"s":128.191,"e":132.042,"en":"the the strength weight is actually similar to carbon fiber.","ko":"중량 대비 강도가 사실상 탄소섬유와 비슷해요.","w":[["the",128.191,128.291],["the",128.933,129.053],["strength",129.053,129.454],["weight",129.454,129.695],["is",130.096,130.257],["actually",130.257,130.618],["similar",130.618,130.999],["to",130.999,131.139],["carbon",131.5,131.781],["fiber.",131.781,132.042]],"spk":"musk"},{"s":133.147,"e":136.542,"en":"So if you, if you look at the, so if you look at the material properties at room temperature,","ko":"그러니까 상온에서의 재료 특성을 보면,","w":[["So",133.147,133.368],["if",133.368,133.448],["you,",133.448,133.609],["if",133.609,133.669],["you",133.669,133.73],["look",133.73,133.85],["at",133.85,133.91],["the,",133.91,134.312],["so",134.312,134.372],["if",134.593,134.654],["you",134.654,134.714],["look",134.714,134.814],["at",134.814,134.875],["the",134.875,134.935],["material",134.935,135.136],["properties",135.136,135.658],["at",135.658,135.899],["room",135.899,136.1],["temperature,",136.1,136.542]],"spk":"musk","notes":[{"a":17,"b":18,"text":"room temperature","type":"collocation","ko":"상온","nuance":"일상과 과학 모두에서 쓰는 표준 표현이에요.","use":"at room temperature","ex":"Serve the cake at room temperature.","ex_ko":"케이크는 상온에서 내세요."}]},{"s":137.329,"e":141.004,"en":"it looks like the steel is is going to be twice as heavy.","ko":"강철이 두 배는 무거울 것처럼 보여요.","w":[["it",137.329,137.449],["looks",137.449,137.65],["like",137.65,137.811],["the",137.811,137.911],["steel",137.911,138.273],["is",138.273,138.494],["is",140.02,140.14],["going",140.14,140.261],["to",140.261,140.301],["be",140.301,140.401],["twice",140.401,140.703],["as",140.703,140.803],["heavy.",140.803,141.004]],"spk":"musk","notes":[{"a":1,"b":2,"text":"looks like","type":"discourse","ko":"~처럼 보이다","nuance":"겉보기 판단을 말하고 뒤에서 뒤집을 때 자주 써요.","use":"It looks like + 문장","ex":"It looks like we'll be late.","ex_ko":"우리 늦을 것 같아요."},{"a":10,"b":12,"text":"twice as heavy","type":"collocation","ko":"두 배 무거운","nuance":"배수 비교의 기본 패턴이에요.","use":"twice/three times as + 형용사 (as ~)","ex":"It's twice as fast as the old model.","ex_ko":"예전 모델보다 두 배 빨라요."}]},{"s":141.489,"e":147.528,"en":"But if you look at the material properties at cryogenic temperature of full hard steel stainless of, of particular grades,","ko":"하지만 특정 등급의 완전 경화 스테인리스강이 극저온에서 어떤 재료 특성을 보이는지 보면,","w":[["But",141.489,141.589],["if",141.589,141.67],["you",141.67,141.75],["look",141.75,141.87],["at",141.87,141.971],["the",141.971,142.051],["material",142.292,142.573],["properties",142.573,142.994],["at",143.194,143.315],["cryogenic",143.315,143.816],["temperature",143.816,144.278],["of",144.278,144.418],["full",144.418,144.639],["hard",144.639,144.88],["steel",144.88,145.12],["stainless",145.903,146.364],["of,",146.364,146.444],["of",146.645,146.725],["particular",146.725,147.147],["grades,",147.147,147.528]],"spk":"musk","notes":[{"a":18,"b":19,"text":"particular grades","type":"collocation","ko":"특정 등급","nuance":"조건을 좁혀 정확히 말할 때 써요.","use":"of particular grades / a particular grade of","ex":"","ex_ko":""}]},{"s":148.332,"e":153.209,"en":"then the, the you actually get to a similar strength weight as carbon fiber.","ko":"실제로 탄소섬유와 비슷한 중량 대비 강도가 나와요.","w":[["then",148.332,148.533],["the,",149.296,149.376],["the",149.557,149.637],["you",149.818,149.958],["actually",149.958,150.239],["get",150.239,150.42],["to",150.761,150.861],["a",151.062,151.182],["similar",151.182,151.503],["strength",151.824,152.126],["weight",152.126,152.346],["as",152.748,152.888],["carbon",152.888,153.089],["fiber.",153.089,153.209]],"spk":"musk","notes":[{"a":5,"b":6,"text":"get to","type":"phrasal","ko":"~에 도달하다","nuance":"수치나 상태가 어느 수준까지 간다는 느낌이에요.","use":"get to + 수준/수치","ex":"We got to 90% accuracy.","ex_ko":"정확도 90%까지 도달했어요."}]},{"s":154.256,"e":160.313,"en":"So so basically almost the entire primary structure is a cryogenic temperature.","ko":"그러니까 기본적으로 주 구조물 거의 전체가 극저온 상태예요.","w":[["So",154.256,154.357],["so",156.041,156.262],["basically",156.262,156.623],["almost",157.385,157.606],["the",157.606,157.686],["entire",157.686,158.167],["primary",158.167,158.508],["structure",158.508,158.949],["is",159.25,159.35],["a",159.35,159.451],["cryogenic",159.451,159.872],["temperature.",159.872,160.313]],"spk":"musk","notes":[{"a":2,"b":2,"text":"basically","type":"discourse","ko":"기본적으로, 요컨대","nuance":"설명을 단순하게 정리할 때 구어에서 아주 많이 써요.","use":"Basically, + 요점","ex":"Basically, it's cheaper and easier.","ex_ko":"요컨대 더 싸고 쉬워요."}]},{"s":160.956,"e":168.162,"en":"So then you've got a 300 series stainless that's that's, strain-hardened,","ko":"그러면 가공 경화된 300 시리즈 스테인리스강이,","w":[["So",160.956,161.056],["then",161.056,161.196],["you've",161.356,161.516],["got",161.516,161.656],["a",163.358,163.418],["300",163.418,163.898],["series",163.898,164.198],["stainless",164.399,164.859],["that's",165.58,165.88],["that's,",165.88,166.02],["strain-hardened,",167.581,168.162]],"spk":"musk","notes":[{"a":5,"b":7,"text":"300 series stainless","type":"term","ko":"300 계열 스테인리스강","nuance":"304·316 같은 오스테나이트계 스테인리스강이에요.","use":"300 series stainless (steel)","ex":"","ex_ko":""}]},{"s":170.069,"e":172.698,"en":"because it's a almost the whole thing's a cryogenic temperature.","ko":"거의 전체가 극저온 상태이기 때문에","w":[["because",170.069,170.551],["it's",170.551,170.671],["a",171.053,171.073],["almost",171.374,171.594],["the",171.594,171.654],["whole",171.654,171.755],["thing's",171.755,171.915],["a",171.915,171.975],["cryogenic",171.975,172.337],["temperature.",172.337,172.698]],"spk":"musk","notes":[{"a":4,"b":6,"text":"the whole thing's","type":"collocation","ko":"전체, 통째로","nuance":"'the whole thing'은 구어에서 '그 모든 것'을 뭉뚱그려 말해요.","use":"the whole thing + 동사","ex":"The whole thing took about an hour.","ex_ko":"전체 다 하는 데 한 시간쯤 걸렸어요."}]},{"s":173.322,"e":177.898,"en":"Actually has a similar strength to weight as carbon fiber,","ko":"실제로 탄소섬유와 비슷한 중량 대비 강도를 가지면서도,","w":[["Actually",173.322,173.603],["has",173.603,173.804],["a",174.526,174.687],["similar",174.687,174.948],["strength",174.948,175.189],["to",175.189,175.269],["weight",175.269,175.47],["as",176.052,176.312],["carbon",177.336,177.617],["fiber,",177.617,177.898]],"spk":"musk"},{"s":178.966,"e":184.662,"en":"but costs, fifty times less than normal material and is very easy to work with.","ko":"비용은 기존 재료보다 50배나 싸고 다루기도 아주 쉬워요.","w":[["but",178.966,179.106],["costs,",179.106,179.928],["fifty",180.57,180.831],["times",180.831,181.092],["less",181.092,181.292],["than",181.954,182.055],["normal",182.055,182.195],["material",182.195,182.516],["and",183.098,183.358],["is",183.358,183.459],["very",183.699,183.94],["easy",183.94,184.141],["to",184.141,184.221],["work",184.221,184.441],["with.",184.441,184.662]],"spk":"musk","notes":[{"a":2,"b":5,"text":"fifty times less than","type":"collocation","ko":"50배 더 싼","nuance":"배수 + less는 비용·크기 비교에서 자주 써요.","use":"숫자 + times less/cheaper than ~","ex":"It uses ten times less power.","ex_ko":"전력을 열 배 적게 써요."}]},{"s":184.662,"e":186.881,"en":"You, you can weld stainless steel outdoors.","ko":"스테인리스강은 야외에서도 용접할 수 있어요.","w":[["You,",184.662,184.702],["you",185.17,185.27],["can",185.27,185.532],["weld",185.532,185.794],["stainless",185.794,186.116],["steel",186.116,186.397],["outdoors.",186.397,186.881]],"spk":"musk"},{"s":188.109,"e":190.462,"en":"You could smoke a cigar while welding stainless steel.","ko":"시가를 피우면서 용접해도 될 정도예요.","w":[["You",188.109,188.209],["could",188.209,188.35],["smoke",188.35,188.612],["a",188.612,188.672],["cigar",188.672,189.034],["while",189.577,189.798],["welding",189.798,190.06],["stainless",190.06,190.341],["steel.",190.341,190.462]],"spk":"musk","notes":[{"a":2,"b":4,"text":"smoke a cigar","type":"idiom","ko":"시가를 피우다","nuance":"'그 정도로 대충 해도 된다'는 과장 섞인 농담이에요.","use":"You could + 엉뚱한 행동 + while ~ 로 쉽다는 걸 과장해요.","ex":"You could do it with your eyes closed.","ex_ko":"눈 감고도 할 수 있어요."}]},{"s":190.77,"e":192.863,"en":"It's, it's like, it's, it's very resilient.","ko":"정말 튼튼하고 잘 버텨요.","w":[["It's,",190.77,190.951],["it's",190.951,191.072],["like,",191.072,191.374],["it's,",191.374,191.555],["it's",191.736,191.957],["very",191.957,192.219],["resilient.",192.4,192.863]],"spk":"musk","notes":[{"a":6,"b":6,"text":"resilient","type":"vocab","ko":"잘 버티는, 회복력 있는","nuance":"재료엔 '튼튼한', 사람엔 '회복력 있는'의 뜻이에요.","use":"be very resilient / a resilient system","ex":"Kids are surprisingly resilient.","ex_ko":"아이들은 의외로 회복력이 강해요."}]},{"s":194.313,"e":195.663,"en":"You, you can modify it easily.","ko":"쉽게 수정할 수도 있고요.","w":[["You,",194.313,194.555],["you",194.555,194.656],["can",194.656,194.797],["modify",194.797,195.22],["it",195.22,195.361],["easily.",195.361,195.663]],"spk":"musk"},{"s":195.663,"e":199.125,"en":"It's, it's, if you want to, if you want to attach something, you just weld it right on.","ko":"뭔가를 부착하고 싶으면 그냥 바로 용접해서 붙이면 돼요.","w":[["It's,",195.663,195.703],["it's,",195.703,195.743],["if",195.743,195.783],["you",195.783,195.823],["want",196.273,196.453],["to,",196.453,196.594],["if",196.976,197.498],["you",197.498,197.558],["want",197.558,197.679],["to",197.679,197.719],["attach",197.719,198.06],["something,",198.06,198.362],["you",198.362,198.442],["just",198.442,198.562],["weld",198.562,198.723],["it",198.723,198.824],["right",198.824,199.024],["on.",199.024,199.125]],"spk":"musk","notes":[{"a":14,"b":17,"text":"weld it right on","type":"phrasal","ko":"바로 용접해서 붙이다","nuance":"right이 '그 자리에서 곧장'이라는 느낌을 줘요.","use":"just + 동사 + it right on","ex":"Just stick it right on the wall.","ex_ko":"그냥 벽에 바로 붙이세요."}]},{"s":200.43,"e":213.995,"en":"So, very easy to work with, very low cost and, like I said, at cryogenic temperature, similar strength to weight to carbon fiber.","ko":"그러니까 다루기 쉽고, 비용도 아주 낮고, 말했듯이 극저온에선 중량 대비 강도가 탄소섬유와 비슷해요.","w":[["So,",200.43,200.53],["very",201.891,202.151],["easy",202.151,202.331],["to",202.331,202.431],["work",202.431,202.671],["with,",202.671,202.891],["very",204.272,204.532],["low",204.532,204.732],["cost",204.732,205.212],["and,",206.532,206.872],["like",208.573,208.733],["I",208.733,208.793],["said,",208.793,209.053],["at",209.053,209.213],["cryogenic",209.213,209.713],["temperature,",209.713,210.133],["similar",210.634,210.914],["strength",210.914,211.174],["to",211.174,211.274],["weight",211.274,211.454],["to",212.294,212.434],["carbon",213.315,213.655],["fiber.",213.655,213.995]],"spk":"musk","notes":[{"a":10,"b":12,"text":"like I said","type":"discourse","ko":"말했듯이","nuance":"앞서 한 말을 다시 강조할 때 쓰는 표현이에요.","use":"Like I said, + 요점 (as I said보다 구어적)","ex":"Like I said, it's not a big deal.","ex_ko":"말했듯이 별일 아니에요."}]},{"s":215.437,"e":221.835,"en":"Then when you factor in that, that we don't need to, we don't, we, we have a much reduced heat shield mass,","ko":"게다가 열 차폐막 질량도 훨씬 줄어든다는 점까지 고려하면요,","w":[["Then",215.437,215.657],["when",215.657,215.778],["you",215.778,215.878],["factor",215.878,216.239],["in",216.239,216.339],["that,",216.339,216.58],["that",217.583,217.723],["we",217.723,217.823],["don't",217.823,217.964],["need",217.964,218.064],["to,",218.064,218.104],["we",218.365,218.465],["don't,",218.465,218.626],["we,",219.047,219.107],["we",219.267,219.408],["have",219.408,219.608],["a",219.608,219.689],["much",219.689,219.949],["reduced",219.949,220.37],["heat",220.992,221.213],["shield",221.213,221.514],["mass,",221.514,221.835]],"spk":"musk","notes":[{"a":3,"b":4,"text":"factor in","type":"phrasal","ko":"~을 고려에 넣다","nuance":"계산이나 판단에 요소를 포함시킨다는 뜻이에요.","use":"factor in + 요소 / factor + 요소 + in","ex":"Once you factor in shipping, it's not cheap.","ex_ko":"배송비까지 고려하면 싸지 않아요."},{"a":17,"b":18,"text":"much reduced","type":"collocation","ko":"훨씬 줄어든","nuance":"much가 비교급 의미를 강조해요.","use":"a much reduced + 명사","ex":"We now have a much reduced budget.","ex_ko":"이제 예산이 훨씬 줄었어요."},{"a":19,"b":20,"text":"heat shield","type":"term","ko":"열 차폐막","nuance":"대기권 재진입 시 열을 막아 주는 보호막이에요.","use":"heat shield / heat shielding","ex":"","ex_ko":""}]},{"s":222.461,"e":226.917,"en":"because the melting point of steel is much greater than the melting point of aluminum.","ko":"강철의 녹는점이 알루미늄보다 훨씬 높기 때문이에요.","w":[["because",222.461,222.782],["the",222.782,222.882],["melting",222.882,223.244],["point",223.244,223.685],["of",223.685,223.846],["steel",223.846,224.127],["is",224.308,224.428],["much",224.428,224.649],["greater",224.649,224.91],["than",224.91,225.03],["the",225.03,225.131],["melting",225.131,225.452],["point",225.452,225.693],["of",226.114,226.275],["aluminum.",226.516,226.917]],"spk":"musk","notes":[{"a":2,"b":3,"text":"melting point","type":"term","ko":"녹는점","nuance":"재료 비교에서 기본이 되는 용어예요.","use":"the melting point of + 물질","ex":"","ex_ko":""},{"a":7,"b":9,"text":"much greater than","type":"collocation","ko":"~보다 훨씬 높은","nuance":"수치 비교에서 much로 차이를 강조해요.","use":"much greater/higher than ~","ex":"The risk is much greater than we thought.","ex_ko":"위험이 생각보다 훨씬 커요."}]},{"s":228.505,"e":230.117,"en":"It's about twice the melting point of aluminum.","ko":"알루미늄 녹는점의 약 두 배예요.","w":[["It's",228.505,228.606],["about",228.606,228.767],["twice",228.767,228.989],["the",228.989,229.049],["melting",229.049,229.291],["point",229.291,229.452],["of",229.452,229.513],["aluminum.",229.815,230.117]],"spk":"musk","notes":[{"a":2,"b":5,"text":"twice the melting point","type":"collocation","ko":"녹는점의 두 배","nuance":"twice the + 명사 어순이 포인트예요.","use":"twice the + 명사 (of ~)","ex":"It's twice the size of my old office.","ex_ko":"예전 사무실의 두 배 크기예요."}]},{"s":230.748,"e":230.849,"en":"And—","ko":"그리고—","w":[["And—",230.748,230.849]],"spk":"musk"},{"s":231.016,"e":232.44,"en":"So you just run the rocket much hotter?","ko":"그럼 로켓을 훨씬 더 뜨겁게 운용하는 거네요?","w":[["So",231.016,231.056],["you",231.056,231.217],["just",231.217,231.417],["run",231.417,231.577],["the",231.577,231.678],["rocket",231.678,231.978],["much",231.978,232.179],["hotter?",232.179,232.44]],"spk":"host","notes":[{"a":3,"b":7,"text":"run the rocket much hotter","type":"collocation","ko":"로켓을 훨씬 뜨겁게 운용하다","nuance":"run은 기계·엔진을 '돌리다, 가동하다'라는 뜻이에요.","use":"run + 기계 + hotter/faster/longer","ex":"Don't run the engine too hot.","ex_ko":"엔진을 너무 뜨겁게 돌리지 마세요."}]},{"s":232.97,"e":233.212,"en":"Yes.","ko":"네.","w":[["Yes.",232.97,233.212]],"spk":"musk"},{"s":233.765,"e":241.09,"en":"So especially for the ship, which is coming in like a fla- a blazing meteor, it is, the, you, you,","ko":"특히 불타는 유성처럼 대기권에 진입하는 우주선의 경우엔,","w":[["So",233.765,233.966],["especially",233.966,234.366],["for",234.366,234.486],["the",234.486,234.626],["ship,",234.626,234.866],["which",235.767,235.967],["is",235.967,236.087],["coming",236.087,236.347],["in",236.347,236.427],["like",236.427,236.627],["a",236.627,236.727],["fla-",236.727,236.847],["a",237.287,237.347],["blazing",237.347,237.728],["meteor,",237.728,238.048],["it",238.928,239.048],["is,",239.048,239.209],["the,",240.349,240.449],["you,",240.869,241.03],["you,",241.03,241.09]],"spk":"musk","notes":[{"a":7,"b":8,"text":"coming in","type":"phrasal","ko":"(대기권에) 들어오다","nuance":"우주선 재진입을 쉽게 표현한 말이에요.","use":"come in like + 비유","ex":"The plane came in too fast.","ex_ko":"비행기가 너무 빠르게 진입했어요."},{"a":12,"b":14,"text":"a blazing meteor","type":"vocab","ko":"불타는 유성","nuance":"blazing은 '활활 타오르는'이라는 생생한 묘사예요.","use":"like a blazing meteor / a blazing fire","ex":"","ex_ko":""}]},{"s":241.455,"e":244.049,"en":"you can greatly reduce the mass of the heat shield.","ko":"열 차폐막 질량을 크게 줄일 수 있어요.","w":[["you",241.455,241.575],["can",241.575,241.676],["greatly",242.018,242.32],["reduce",242.32,242.802],["the",242.802,242.923],["mass",242.923,243.265],["of",243.265,243.345],["the",243.345,243.466],["heat",243.466,243.707],["shield.",243.707,244.049]],"spk":"musk","notes":[{"a":2,"b":3,"text":"greatly reduce","type":"collocation","ko":"크게 줄이다","nuance":"greatly는 reduce, improve와 잘 어울리는 격식 있는 부사예요.","use":"greatly reduce/improve/increase + 명사","ex":"This greatly reduces the risk.","ex_ko":"이건 위험을 크게 줄여요."}]},{"s":245.414,"e":253.841,"en":"So the, so you can call it cut the mass of the windward part of the heat shield in in, maybe in half,","ko":"그래서 바람을 받는 쪽 열 차폐막 질량을 대략, 아마 절반쯤으로 줄일 수 있고,","w":[["So",245.414,245.535],["the,",245.535,245.595],["so",245.795,245.875],["you",246.115,246.195],["can",246.195,246.315],["call",246.836,247.016],["it",247.016,247.216],["cut",247.216,247.516],["the",247.516,247.616],["mass",248.417,248.717],["of",248.897,249.037],["the",249.037,249.157],["windward",249.597,249.998],["part",251.319,251.499],["of",251.499,251.539],["the",251.539,251.619],["heat",251.619,251.799],["shield",251.799,252.099],["in",252.56,252.76],["in,",252.76,252.86],["maybe",253.16,253.36],["in",253.36,253.5],["half,",253.5,253.841]],"spk":"musk","notes":[{"a":21,"b":22,"text":"in half","type":"idiom","ko":"절반으로","nuance":"cut ~ in half 형태로 아주 자주 써요.","use":"cut + 대상 + in half","ex":"We cut the cost in half.","ex_ko":"비용을 절반으로 줄였어요."},{"a":12,"b":12,"text":"windward","type":"vocab","ko":"바람을 받는 쪽의","nuance":"항해·항공 용어로 공기가 부딪히는 면을 말해요.","use":"the windward side/part","ex":"","ex_ko":""}]},{"s":254.524,"e":258.082,"en":"and you don't need any heat shielding on the on the leeward side.","ko":"바람이 닿지 않는 반대쪽에는 열 차폐가 아예 필요 없어요.","w":[["and",254.524,254.746],["you",254.746,254.846],["don't",254.846,255.007],["need",255.007,255.128],["any",255.369,255.55],["heat",256.052,256.253],["shielding",256.253,256.695],["on",256.695,256.816],["the",256.816,256.876],["on",257.218,257.319],["the",257.319,257.439],["leeward",257.439,257.781],["side.",257.781,258.082]],"spk":"musk","notes":[{"a":11,"b":12,"text":"leeward side","type":"vocab","ko":"바람이 가려지는 쪽","nuance":"windward의 반대말이에요.","use":"the leeward side (↔ windward side)","ex":"","ex_ko":""}]}],"speakers":{"musk":{"name":"일론 머스크","full":"Elon Musk","role":"SpaceX CEO"},"host":{"name":"진행자","full":"진행자","role":"인터뷰 진행자"}}}</script>
+<script>
+(function () {
+'use strict';
+var D;
+try { D = JSON.parse(document.getElementById('data').textContent); } catch (e) { D = null; }
+if (!D || typeof D !== 'object') D = { id: 'demo', title: '', subtitle: '', video: 'video.mp4', w: 16, h: 9, duration: 0, sentences: [] };
+var SENT = D.sentences || [], N = SENT.length;
+
+var $ = function (id) { return document.getElementById(id); };
+var root = document.documentElement, app = $('app'), video = $('v'), vbox = $('vbox'), list = $('list'), mid = $('mid'), dock = $('dock'), bPlay = $('bPlay');
+var reduced = matchMedia('(prefers-reduced-motion: reduce)');
+var LEAD = 0.08, TAIL = 0.15;
+var SPEEDS = [0.6, 0.75, 0.9, 1, 1.25];
+var BAND = (typeof D.captionBand === 'number' && D.captionBand > 0.3 && D.captionBand < 1) ? D.captionBand : 0;
+
+// ---------- persistence ----------
+var KEY = 'ks:' + D.id;
+function readJSON(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+function writeJSON(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+// stored state is untrusted (old versions, other tabs, manual edits): every field is validated; boot's save() writes it back repaired
+function obj(v) { return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; }
+function isIdx(i) { return typeof i === 'number' && i % 1 === 0 && i >= 0 && i < N; }
+var saved = obj(readJSON(KEY));
+var prefs = obj(readJSON('ks:prefs'));
+saved.t = typeof saved.t === 'number' && isFinite(saved.t) && saved.t > 0 ? saved.t : 0;
+var st = {
+  speed: SPEEDS.indexOf(saved.speed) >= 0 ? saved.speed : 1,
+  hide: [0, 1, 2].indexOf(saved.hide) >= 0 ? saved.hide : 0,
+  stars: new Set(Array.isArray(saved.stars) ? saved.stars.slice(0, 5000).filter(isIdx) : []),
+  crop: saved.crop !== false,
+  font: ['s', 'm', 'l'].indexOf(prefs.font) >= 0 ? prefs.font : 'm',
+  theme: ['system', 'light', 'dark'].indexOf(prefs.theme) >= 0 ? prefs.theme : 'system',
+  hinted: !!prefs.hinted, instHinted: !!prefs.instHinted,
+  // play mode (app-wide): what happens at the end of each sentence
+  mode: ['cont', 'stop', 'shadow'].indexOf(prefs.mode) >= 0 ? prefs.mode : 'cont',
+  // saved key expressions ("i:j" = sentence i, note j), newest first
+  mine: Array.isArray(saved.mine) ? saved.mine.slice(0, 5000).filter(function (k) { return typeof k === 'string' && k.length < 16; }) : []
+};
+var lastSave = 0;
+function save() {
+  lastSave = performance.now();
+  var t = video.currentTime || 0;
+  writeJSON(KEY, { t: (videoOK ? t : (saved.t || 0)), speed: st.speed, hide: st.hide, crop: st.crop, loop: false, shadow: false,
+    stars: Array.from(st.stars).sort(function (a, b) { return a - b; }), mine: st.mine, font: st.font, theme: st.theme });
+}
+function savePrefs() { writeJSON('ks:prefs', { font: st.font, theme: st.theme, hinted: st.hinted, instHinted: st.instHinted, mode: st.mode }); save(); }
+
+// ---------- utils ----------
+function fmt(t) {
+  t = Math.max(0, Math.floor(t || 0));
+  var h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), s = t % 60;
+  return (h ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (s < 10 ? '0' : '') + s;
+}
+function fmtKo(t) { t = Math.round(t || 0); var m = Math.floor(t / 60), s = t % 60; return (m ? m + '분 ' : '') + s + '초'; }
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+// last index with arr[i] <= t, or -1
+function bs(arr, t, n) {
+  var lo = 0, hi = (n === undefined ? arr.length : n) - 1, r = -1;
+  while (lo <= hi) { var m = (lo + hi) >> 1; if (arr[m] <= t) { r = m; lo = m + 1; } else hi = m - 1; }
+  return r;
+}
+function cubicBezier(x1, y1, x2, y2) {
+  function a(p1, p2) { return 1 - 3 * p2 + 3 * p1; } function b(p1, p2) { return 3 * p2 - 6 * p1; } function c(p1) { return 3 * p1; }
+  function calc(t, p1, p2) { return ((a(p1, p2) * t + b(p1, p2)) * t + c(p1)) * t; }
+  function slope(t, p1, p2) { return 3 * a(p1, p2) * t * t + 2 * b(p1, p2) * t + c(p1); }
+  return function (x) {
+    if (x <= 0) return 0; if (x >= 1) return 1;
+    var t = x;
+    for (var i = 0; i < 6; i++) { var s = slope(t, x1, x2); if (Math.abs(s) < 1e-6) break; t -= (calc(t, x1, x2) - x) / s; }
+    return calc(Math.min(1, Math.max(0, t)), y1, y2);
+  };
+}
+var easeScroll = cubicBezier(.22, .61, .36, 1);
+function restart(el, c) { el.classList.remove(c); void el.offsetWidth; el.classList.add(c); }
+
+// ---------- precompute ----------
+var S = new Float64Array(N), E = new Float64Array(N), WS = [], WE = [];
+for (var i = 0; i < N; i++) {
+  var s = SENT[i], ww = s.w || [];
+  S[i] = s.s; E[i] = s.e;
+  var a = new Float64Array(ww.length), b = new Float64Array(ww.length);
+  for (var k = 0; k < ww.length; k++) { a[k] = ww[k][1]; b[k] = ww[k][2]; }
+  WS.push(a); WE.push(b);
+}
+function winStart(i) { return Math.max(0, S[i] - LEAD); }
+function winEnd(i) { return i + 1 < N ? Math.min(E[i] + TAIL, S[i + 1]) : E[i] + TAIL; }
+
+// ---------- render ----------
+$('ttl').textContent = D.title || ''; $('sttl').textContent = D.subtitle || '';
+$('aaTitle').textContent = [D.title, D.subtitle].filter(Boolean).join(' — ');
+$('vname').textContent = D.video || 'video.mp4';
+if (D.title) document.title = D.title;
+var STAR_SVG = '<svg viewBox="0 0 24 24"><use href="#ic-star"/></svg>';
+// speakers: optional per-sentence `spk` + top-level `speakers` map; tint by map order
+var SPK = (D.speakers && typeof D.speakers === 'object') ? D.speakers : {}, SPKC = {};
+Object.keys(SPK).forEach(function (k, j) { SPKC[k] = 'var(--s' + (j % 4) + ')'; });
+function spkName(k) { return (SPK[k] && SPK[k].name) || k; }
+// key-expression notes: optional per-sentence `notes` [{a, b, text, ko, ...}] (validated: contiguous, non-overlapping, max 3)
+var NOTES = [];
+for (var i = 0; i < N; i++) {
+  var nn = Array.isArray(SENT[i].notes) ? SENT[i].notes : [], nw = (SENT[i].w || []).length, ok = [], end = -1;
+  nn.slice().sort(function (x, y) { return x.a - y.a; }).forEach(function (x) {
+    if (ok.length < 3 && x && x.a >= 0 && x.b >= x.a && x.b < nw && x.a > end && x.ko) { ok.push(x); end = x.b; }
+  });
+  NOTES.push(ok);
+}
+(function render() {
+  var h = [], prevSpk = null;
+  for (var i = 0; i < N; i++) {
+    var s = SENT[i], ww = s.w || [], ns = NOTES[i], nj = 0;
+    var gap = i > 0 && S[i] - E[i - 1] > 1.5;
+    h.push('<div class="row', gap ? ' gap' : '', '" data-i="', i, '" role="listitem">');
+    if (gap) h.push('<span class="gd" aria-hidden="true">· · ·</span>');
+    h.push('<div class="meta"><span class="ts" aria-hidden="true">', fmt(S[i]), '</span>');
+    if (s.spk) {
+      var c = SPKC[s.spk] || 'var(--ink-3)';
+      // the turn's first row gets a filled chip; continuation rows a quiet tinted name
+      h.push('<span class="sk', s.spk === prevSpk ? ' cont' : '', '" style="--sc:', c, '">', esc(spkName(s.spk)), '</span>');
+    }
+    prevSpk = s.spk || null;
+    h.push('<span class="mr"><span class="lp">↻ 반복</span><span class="st">', STAR_SVG, '</span></span></div>');
+    h.push('<p class="en" lang="en">');
+    for (var k = 0; k < ww.length; k++) {
+      if (k) h.push(' ');
+      if (nj < ns.length && k === ns[nj].a) h.push('<span class="nt" data-n="', nj, '" role="button" aria-haspopup="dialog">');
+      h.push('<span class="w">', esc(ww[k][0]), '</span>');
+      if (nj < ns.length && k === ns[nj].b) { h.push('</span>'); nj++; }
+    }
+    h.push('</p>');
+    if (s.ko) h.push('<p class="ko" lang="ko">', esc(s.ko), '</p>');
+    h.push('</div>');
+  }
+  h.push('<div id="spacer"><div id="endb"></div></div>');
+  list.innerHTML = h.join('');
+})();
+if (!N) app.classList.add('notx');
+var rows = list.querySelectorAll('.row'), spacer = $('spacer');
+var WSPAN = [];
+for (i = 0; i < N; i++) WSPAN.push(rows[i].querySelectorAll('.w'));
+st.stars.forEach(function (i) { rows[i].classList.add('star'); });
+
+// ---------- layout cache ----------
+var offTop = new Float64Array(N), offH = new Float64Array(N), listH = 0, maxScroll = 0, scrollY = 0;
+function measure() {
+  listH = list.clientHeight;
+  spacer.style.height = Math.round(listH * 0.65) + 'px';
+  for (var i = 0; i < N; i++) { offTop[i] = rows[i].offsetTop; offH[i] = rows[i].offsetHeight; }
+  maxScroll = Math.max(0, list.scrollHeight - listH);
+  scrollY = list.scrollTop;
+}
+function anchorFor(i) {
+  var y = offH[i] > listH * 0.5 ? offTop[i] + offH[i] / 2 - listH / 2 : offTop[i] - listH * 0.35;
+  return Math.max(0, Math.min(maxScroll, Math.round(y)));
+}
+
+// ---------- karaoke sync ----------
+var ai = -1, wSp = 0, wCur = -1, lo = 1, hi = 0, lastT = 0;
+// pinI: a sentence we just seeked to (at s - LEAD). It stays active through its lead-in instead of the previous one.
+var pinI = -1;
+function setActive(i, natural) {
+  var old = ai;
+  if (old >= 0) {
+    var r = rows[old], sp = WSPAN[old];
+    r.classList.remove('on');
+    for (var k = 0; k < sp.length; k++) sp[k].className = 'w';
+    if (natural && st.hide === 2 && i === old + 1) reveal(old, 'en');
+  }
+  // .past range diff
+  if (i > old) { for (var j = Math.max(0, old); j < i; j++) rows[j].classList.add('past'); }
+  else if (i < old) { for (j = Math.max(0, i); j < old; j++) rows[j].classList.remove('past'); }
+  if (i >= 0) rows[i].classList.remove('past');
+  if (N) rows[0].classList.toggle('pre', i < 0);  // before the first word: sentence 0 is pre-selected ("starts here")
+  ai = i; wSp = 0; wCur = -1;
+  if (i >= 0) rows[i].classList.add('on');
+  if (natural && old === 0 && i === 1) showCoach();
+  if (follow) scrollToActive(false); else checkPill();
+}
+function applyWords(sp, cur) {
+  var spans = WSPAN[ai], k;
+  if (sp > wSp) for (k = wSp; k < sp; k++) spans[k].classList.add('sp');
+  else if (sp < wSp) for (k = sp; k < wSp; k++) spans[k].classList.remove('sp');
+  if (cur !== wCur) {
+    if (wCur >= 0) spans[wCur].classList.remove('cur');
+    if (cur >= 0) spans[cur].classList.add('cur');
+  }
+  wSp = sp; wCur = cur;
+  if (st.hide === 2 && sp === spans.length && sp > 0) reveal(ai, 'en');
+}
+function sync(t, natural) {
+  if (t >= lo && t < hi) return;
+  if (waiting) {  // shadowing wait: the finished sentence stays active, fully spoken
+    if (ai !== waitI) setActive(waitI, false);
+    applyWords(WS[waitI].length, -1); lo = 1; hi = 0; return;
+  }
+  var i = bs(S, t), base;
+  if (pinI >= 0) {
+    if (t >= S[pinI] || t < winStart(pinI) - 0.05) pinI = -1;
+    else if (i < pinI) i = pinI;
+  }
+  if (i !== ai) setActive(i, natural);
+  if (i < 0) { lo = -Infinity; hi = N ? S[0] : Infinity; return; }
+  base = i === pinI ? winStart(i) - 0.05 : S[i];
+  var ws = WS[i], we = WE[i], n = ws.length, k = bs(ws, t), sp, cur;
+  if (k >= 0 && t < we[k]) { cur = k; sp = k; lo = ws[k]; hi = we[k]; }
+  else { cur = -1; sp = k + 1; lo = k >= 0 ? we[k] : base; hi = k + 1 < n ? ws[k + 1] : Infinity; }
+  if (lo < base) lo = base;
+  if (i + 1 < N && hi > S[i + 1]) hi = S[i + 1];
+  applyWords(sp, cur);
+}
+function resync(t) { lo = 1; hi = 0; sync(t, false); }
+
+// ---------- auto-follow & scrolling ----------
+var follow = true, tween = 0, fingerOnList = false, lastListTouch = 0, leftBand = false;
+function cancelTween() { if (tween) { cancelAnimationFrame(tween); tween = 0; } }
+function scrollTo(y, smooth) {
+  cancelTween();
+  var from = scrollY;
+  if (!smooth || reduced.matches || Math.abs(y - from) > listH * 1.5 || Math.abs(y - from) < 1) {
+    list.scrollTop = y; scrollY = y; return;
+  }
+  var t0 = performance.now(), dur = 380;
+  var step = function (now) {
+    var p = Math.min(1, (now - t0) / dur), v = from + (y - from) * easeScroll(p);
+    list.scrollTop = v; scrollY = v;
+    tween = p < 1 ? requestAnimationFrame(step) : 0;
+  };
+  tween = requestAnimationFrame(step);
+}
+function scrollToActive(instant) {
+  if (ai < 0) { scrollTo(0, !instant); return; }
+  scrollTo(anchorFor(ai), !instant);
+}
+function resumeFollow(instant) { follow = true; leftBand = false; showPill(false); scrollToActive(instant); }
+function pauseFollow() { if (!follow && !tween) return; follow = false; leftBand = false; cancelTween(); checkPill(); }
+var pill = $('pill'), pillArrow = $('pillArrow'), pillOn = false;
+function showPill(on, up) {
+  if (on && pillArrow) pillArrow.setAttribute('d', up ? 'M12 19V5M6 11l6-6 6 6' : 'M12 5v14M6 13l6 6 6-6');
+  if (on === pillOn) return;
+  pillOn = on; pill.classList.toggle('show', on);
+}
+function checkPill() {
+  if (follow || ai < 0) { showPill(false); return; }
+  var top = offTop[ai] - scrollY, bot = top + offH[ai];
+  if (bot < 8) showPill(true, true); else if (top > listH - 8) showPill(true, false); else showPill(false);
+}
+list.addEventListener('scroll', function () {
+  scrollY = list.scrollTop;
+  if (follow || ai < 0) return;
+  var rel = (offTop[ai] - scrollY) / listH;
+  var inBand = rel >= 0.2 && rel <= 0.6;
+  if (!inBand) leftBand = true;
+  else if (leftBand && !fingerOnList) { follow = true; leftBand = false; }
+  checkPill();
+}, { passive: true });
+var touchY0 = 0;
+list.addEventListener('touchstart', function (e) { fingerOnList = true; lastListTouch = performance.now(); touchY0 = e.touches[0].clientY; }, { passive: true });
+list.addEventListener('touchmove', function (e) {
+  lastListTouch = performance.now();
+  if (Math.abs(e.touches[0].clientY - touchY0) > 6) pauseFollow();
+}, { passive: true });
+var endTouch = function () { fingerOnList = false; lastListTouch = performance.now(); };
+list.addEventListener('touchend', endTouch, { passive: true });
+list.addEventListener('touchcancel', endTouch, { passive: true });
+list.addEventListener('wheel', function () { lastListTouch = performance.now(); pauseFollow(); }, { passive: true });
+pill.addEventListener('click', function () { resumeFollow(false); });
+
+// ---------- toast (star, loop-cancel, resume, errors only) ----------
+var toastEl = $('toast'), toastMsg = $('toastMsg'), toastAct = $('toastAct'), toastTimer = 0, toastFn = null, toastAt = 0, toastDown = 0;
+function toast(msg, action, fn, ms) {
+  clearTimeout(toastTimer);
+  toastMsg.textContent = msg;
+  toastFn = fn || null; toastAt = performance.now();
+  if (action) { toastAct.textContent = action; toastAct.hidden = false; } else toastAct.hidden = true;
+  toastEl.classList.add('show');
+  toastTimer = setTimeout(hideToast, ms || (action ? 5000 : 1800));
+}
+function hideToast() { clearTimeout(toastTimer); toastEl.classList.remove('show'); toastFn = null; }
+// an action only counts when its press started after the toast appeared (no ghost click from the tap that caused it)
+toastAct.addEventListener('pointerdown', function () { toastDown = performance.now(); });
+toastAct.addEventListener('click', function (e) {
+  if (e.detail && toastDown < toastAt + 80) return;
+  var f = toastFn; hideToast(); if (f) f();
+});
+
+// ---------- first-run coach line (replaces the hint toast) ----------
+var coachEl = null, coachTimer = 0, playAcc = 0, lastFrameAt = 0;
+function showCoach() {
+  if (st.hinted || coachEl || ai < 0) return;
+  st.hinted = true; savePrefs();
+  coachEl = document.createElement('div'); coachEl.className = 'coach';
+  coachEl.textContent = '↑ 문장을 누르면 거기서 다시 들려줘요';
+  rows[Math.max(0, ai - 1)].appendChild(coachEl);
+  coachTimer = setTimeout(dismissCoach, 15000);
+  relayout();
+}
+function dismissCoach() { clearTimeout(coachTimer); if (coachEl) { coachEl.remove(); coachEl = null; relayout(); } }
+
+// ---------- video state ----------
+var videoOK = false, failed = false, ended = false, bufTimer = 0, metaTimer = 0, scrubbing = false, buffering = false, wantPlay = false;
+var videoSrc = '', localFile = false, gotBytes = false, errHTML = $('errB').innerHTML;
+function setLayer(id, on) { $(id).classList.toggle('show', on); }
+function updChrome() {
+  var playing = videoOK && !video.paused && !waiting;
+  vbox.classList.toggle('playing', playing);
+  $('vpUse').setAttribute('href', ended ? '#ic-replay' : '#ic-play');
+  setLayer('vpause', videoOK && !playing && !waiting && !buffering);
+}
+function loadVideo(src, local) {
+  videoOK = false; failed = false; app.classList.remove('failed'); videoSrc = src; localFile = !!local; gotBytes = false;
+  setLayer('verr', false); setLayer('vload', true); $('vcap').textContent = '영상 불러오는 중';
+  armMeta();
+  video.src = src;
+  video.load();
+  setPlayIcon(); updChrome();
+}
+// no bytes at all for 10 s -> error card; bytes trickling in (slow network) -> keep waiting, say so
+function armMeta() {
+  clearTimeout(metaTimer);
+  metaTimer = setTimeout(function () {
+    if (videoOK || failed) return;
+    if (gotBytes && navigator.onLine !== false) { gotBytes = false; $('vcap').textContent = '연결이 느려요 · 계속 불러오는 중'; armMeta(); }
+    else videoError(navigator.onLine === false ? 'offline' : 'timeout');
+  }, 10000);
+}
+video.addEventListener('progress', function () { gotBytes = true; });
+// why did the video fail? A media error does not say (offline and 404 both give code 4), and navigator.onLine is often wrong:
+// probe the file itself. Network failure -> 'offline' (retried automatically), HTTP error -> 'missing'.
+var probeTimer = 0, probing = false;
+function probe(cb) {
+  if (localFile || !/^https?:/.test(location.protocol) || !window.fetch) { cb('missing'); return; }
+  var done = false, fin = function (k) { if (!done) { done = true; cb(k); } };
+  setTimeout(function () { fin('timeout'); }, 5000);
+  fetch(videoSrc, { headers: { Range: 'bytes=0-1' }, cache: 'no-store' })
+    .then(function (r) { fin(r.ok ? 'timeout' : 'missing'); }, function () { fin('offline'); });
+}
+function watchNet() {  // while the card says offline / can't load: try again every 5 s
+  clearTimeout(probeTimer);
+  probeTimer = setTimeout(function () {
+    if (!failed || localFile || probing) return;
+    probing = true;
+    probe(function (k) { probing = false; if (!failed) return; if (k === 'timeout' && $('retry').hidden === false) retryVideo(); else if (k !== 'missing') watchNet(); });
+  }, 5000);
+}
+function videoError(kind) {
+  if (!kind) {
+    if (localFile) kind = 'missing';
+    else if (navigator.onLine === false) kind = 'offline';
+    else { clearTimeout(metaTimer); probe(function (k) { if (!videoOK) videoError(k); }); return; }
+  }
+  clearTimeout(metaTimer); videoOK = false; failed = true; wantPlay = false; bPlay.classList.remove('queued'); app.classList.add('failed');
+  setLayer('vload', false); clearBuf(); setLayer('verr', true);
+  var net = kind !== 'missing';
+  $('errT').textContent = kind === 'offline' ? '오프라인이에요' : kind === 'timeout' ? '영상을 불러오지 못했어요' : '영상 파일을 찾을 수 없어요';
+  if (net) $('errB').textContent = kind === 'offline' ? '인터넷에 연결되면 영상을 다시 불러와요. 스크립트는 그대로 볼 수 있어요.' : '연결이 느리거나 끊겼어요. 잠시 후 다시 시도해 주세요.';
+  else $('errB').innerHTML = errHTML;
+  $('retry').hidden = !net; $('pick').hidden = net;
+  if (net) watchNet();
+  setPlayIcon(); updChrome();
+}
+function retryVideo() { if (videoSrc && !videoOK) loadVideo(videoSrc, localFile); }
+video.addEventListener('error', function () { if (video.error) videoError(); });
+window.addEventListener('online', function () { if (failed && !localFile) retryVideo(); });
+video.addEventListener('loadedmetadata', function () {
+  clearTimeout(metaTimer);
+  videoOK = true; failed = false; app.classList.remove('failed');
+  setLayer('vload', false); setLayer('verr', false);
+  video.playbackRate = st.speed;
+  try { video.preservesPitch = true; } catch (e) {}
+  dur = video.duration || D.duration || 0;
+  $('seek').setAttribute('aria-valuemax', Math.floor(dur)); setDur(dur);
+  renderTicks();
+  if (pendingResume) {
+    var t = pendingResume; pendingResume = 0;
+    video.currentTime = t; resync(t); drawSeek(t, true); resumeFollow(true);
+    toast(fmt(t) + '부터 이어서', '처음부터', function () { seekTo(0, true); });
+  } else if (lastT > 0) video.currentTime = lastT;  // a row/prev/next was chosen while loading
+  setPlayIcon(); updChrome();
+  if (wantPlay) { wantPlay = false; bPlay.classList.remove('queued'); play(); }
+});
+video.addEventListener('waiting', function () {
+  clearTimeout(bufTimer);
+  bufTimer = setTimeout(function () { buffering = true; setLayer('vbuf', true); app.classList.add('buffering'); updChrome(); }, 250);
+});
+function clearBuf() { clearTimeout(bufTimer); if (!buffering) return; buffering = false; setLayer('vbuf', false); app.classList.remove('buffering'); updChrome(); }
+['playing', 'canplay', 'seeked', 'pause', 'error'].forEach(function (ev) { video.addEventListener(ev, clearBuf); });
+video.addEventListener('play', function () { if (held) clearHold(); ended = false; showEnd(false); setPlayIcon(); updChrome(); lastFrameAt = 0; startLoop(); });
+video.addEventListener('pause', function () { clip = null; setPlayIcon(); updChrome(); save(); tick(true); });
+video.addEventListener('ended', function () { ended = true; setPlayIcon(); updChrome(); tick(true); showEnd(true); });
+video.addEventListener('seeked', function () {
+  // scrubbed / seeked onto the very end: Chrome sets .ended but fires no 'ended' event -> show the end state anyway
+  if (video.ended && !ended && N) { ended = true; setPlayIcon(); updChrome(); showEnd(true); }
+  if (video.paused) tick(true);
+});
+video.addEventListener('ratechange', function () { if (Math.abs(video.playbackRate - st.speed) > 1e-3) video.playbackRate = st.speed; });
+function setPlayIcon() {
+  var s = failed ? ($('retry').hidden ? 'pick' : 'play') : ended ? 'end' : (video.paused || !videoOK ? 'play' : 'pause');
+  if (waiting || held) s = 'play';
+  bPlay.dataset.s = s;
+  bPlay.setAttribute('aria-label', s === 'pick' ? '영상 직접 선택' : (waiting || held) ? '다음 문장 재생' : s === 'end' ? '처음부터 재생' : s === 'pause' ? '일시정지' : '재생');
+}
+function play() {
+  if (failed) { if (!$('retry').hidden) retryVideo(); else $('file').click(); return; }
+  if (!videoOK) { wantPlay = true; bPlay.classList.add('queued'); return; }  // queued until metadata arrives
+  if (ended) { video.currentTime = 0; ended = false; resync(0); }
+  var p = video.play(); if (p && p.catch) p.catch(function () {});
+}
+function togglePlay() {
+  if (waiting) { shadowContinue(); return; }
+  if (held) { advanceFromHold(); return; }
+  if (!videoOK && wantPlay) { wantPlay = false; bPlay.classList.remove('queued'); return; }
+  if (video.paused || ended || !videoOK) play(); else video.pause();
+}
+
+// ---------- end of video ----------
+function showEnd(on) {
+  var el = $('endb');
+  if (on && N) {
+    var n = st.stars.size;
+    el.innerHTML = '<div class="t">끝까지 들었어요 · ' + fmtKo(dur) + '</div><div class="acts"><button type="button" class="chip" data-a="top"><svg class="i" viewBox="0 0 24 24"><use href="#ic-replay"/></svg>처음부터</button>' +
+      (st.mine.length ? '<button type="button" class="chip" data-a="mine"><svg class="i" viewBox="0 0 24 24"><use href="#ic-star"/></svg>내 표현 ' + st.mine.length + '개</button>' : '') +
+      (n ? '<button type="button" class="chip" data-a="star"><svg class="i" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><use href="#ic-star"/></svg>별표 문장 ' + n + '개</button>' : '') + '</div>';
+  }
+  el.classList.toggle('show', !!on && N > 0);
+}
+$('endb').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.a === 'top') { seekTo(0, true); play(); }
+  else if (b.dataset.a === 'mine') { renderMine(); showSheet('shMine'); }
+  else { var i = Math.min.apply(null, Array.from(st.stars)); setLoop(true, i); gotoSentence(i, true); }
+});
+
+// ---------- seek ----------
+var dur = D.duration || 0, tCur = $('tCur'), tDur = $('tDur'), fillEl = $('fill'), thumb = $('thumb'), bubble = $('bubble'), trackW = 0, lastSec = -1, lastFrac = -1;
+function drawSeek(t, force) {
+  var f = dur ? Math.min(1, Math.max(0, t / dur)) : 0;
+  if (force || Math.abs(f - lastFrac) * (trackW || 400) > 0.25) {
+    lastFrac = f;
+    fillEl.style.transform = 'scaleX(' + f + ')';
+    thumb.style.left = (f * 100) + '%';
+  }
+  var sec = Math.floor(t);
+  if (force || sec !== lastSec) { lastSec = sec; tCur.textContent = fmt(t); $('seek').setAttribute('aria-valuenow', sec); $('seek').setAttribute('aria-valuetext', fmt(t)); }
+}
+// elapsed / total: both labels get the width of the total so the track never shifts as digits change
+function setDur(d) {
+  tDur.textContent = fmt(d); tDur.style.minWidth = tCur.style.minWidth = '';
+  var w = Math.ceil(tDur.getBoundingClientRect().width);
+  if (w) tDur.style.minWidth = tCur.style.minWidth = w + 'px';
+}
+function seekTo(t, keepFollow) {
+  t = Math.max(0, Math.min(dur || t, t));
+  cancelShadow(false); clearHold(); clip = null;
+  if (videoOK) video.currentTime = t; else pendingResume = 0;
+  ended = false; setPlayIcon(); showEnd(false); updChrome();
+  lastT = t; resync(t); drawSeek(t, true);
+  if (keepFollow) resumeFollow(false);
+}
+function renderTicks() {
+  var h = '';
+  if (dur) st.stars.forEach(function (i) { h += '<span class="tk" style="left:' + (S[i] / dur * 100).toFixed(3) + '%"></span>'; });
+  $('ticks').innerHTML = h;
+}
+(function seekBar() {
+  var el = $('seek'), track = $('track'), rect = null, lastApply = 0, dragT = 0, moved = false, x0 = 0;
+  function tAt(x) { return Math.max(0, Math.min(1, (x - rect.left) / rect.width)) * dur; }
+  function apply(t, force) {
+    var now = performance.now();
+    if (force || now - lastApply > 120) { lastApply = now; if (videoOK) video.currentTime = t; }
+  }
+  el.addEventListener('pointerdown', function (e) {
+    if (!dur) return;
+    rect = track.getBoundingClientRect(); trackW = rect.width;
+    el.setPointerCapture(e.pointerId); scrubbing = true; moved = false; x0 = e.clientX;
+    el.classList.add('press');
+    cancelShadow(false); clearHold(); clip = null; showEnd(false);
+    dragT = tAt(e.clientX); move();
+  });
+  function move() {
+    drawSeek(dragT, true); bubble.textContent = fmt(dragT);
+    bubble.style.left = Math.max(12, Math.min(88, dragT / dur * 100)) + '%';
+    resync(dragT); apply(dragT, false);
+  }
+  el.addEventListener('pointermove', function (e) {
+    if (!scrubbing) return;
+    if (!moved && Math.abs(e.clientX - x0) > 4) { moved = true; el.classList.add('drag'); }
+    dragT = tAt(e.clientX); move();
+  });
+  function end() {
+    if (!scrubbing) return;
+    scrubbing = false; el.classList.remove('press', 'drag');
+    apply(dragT, true); ended = false; setPlayIcon(); updChrome(); lastT = dragT; resync(dragT); drawSeek(dragT, true);
+    if (loopI >= 0 && (dragT < winStart(loopI) - 0.05 || dragT >= winEnd(loopI))) { setLoop(false); toast('반복 해제'); }
+    resumeFollow(false);
+  }
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', end);
+  el.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); seekTo((video.currentTime || 0) + (e.key === 'ArrowLeft' ? -5 : 5), true); }
+  });
+})();
+
+// ---------- sentence navigation ----------
+function gotoSentence(i, autoplay) {
+  if (!N) return;
+  i = Math.max(0, Math.min(N - 1, i));
+  if (loopI >= 0) setLoop(true, i);
+  pinI = i;
+  seekTo(winStart(i), false);
+  resumeFollow(false);
+  if (autoplay) play();
+}
+// in 한 문장씩 mode prev/next always play (then stop at that sentence's end)
+function prev() {
+  if (!N) return;
+  var t = video.currentTime || 0, wasPlaying = (!video.paused && videoOK) || waiting || held || st.mode === 'stop';
+  if (waiting) { var w = waitI; cancelShadow(); gotoSentence(w, true); return; }  // the prev slot is "다시 듣기" during the wait
+  if (held) { gotoSentence(heldI, true); return; }                                 // replay the sentence we stopped after
+  if (ai >= 0 && t - S[ai] > 1.2) gotoSentence(ai, wasPlaying);
+  else gotoSentence(ai < 0 ? 0 : ai - 1, wasPlaying);
+}
+function next() {
+  if (!N) return;
+  var wasPlaying = (!video.paused && videoOK) || waiting || held || st.mode === 'stop';
+  if (held) { advanceFromHold(); return; }
+  gotoSentence(ai < 0 ? (bs(S, video.currentTime || 0) + 1) : ai + 1, wasPlaying);
+}
+$('bPrev').addEventListener('click', prev);
+$('bNext').addEventListener('click', next);
+bPlay.addEventListener('click', togglePlay);
+vbox.addEventListener('click', function (e) {
+  if (e.target.closest('#verr') || e.target.closest('#bAa')) return;
+  togglePlay();
+});
+
+// ---------- rows: tap / long-press ----------
+// Pointer events only drive the press feedback and the long-press timer; the action itself runs on `click`.
+// (On touch screens the compatibility click is dispatched after touchend at the tap point: acting on pointerup let that click
+// land on whatever had just appeared under the finger — e.g. the scrim of the note sheet, which then closed instantly.)
+(function rowGestures() {
+  var pr = null, pn = null, timer = 0, x0 = 0, y0 = 0, firedAt = 0;
+  function clear() { clearTimeout(timer); if (pr) pr.classList.remove('press'); if (pn) pn.classList.remove('press'); pr = pn = null; }
+  function noteTarget(t, r) {  // a marked chunk, only while its English is visible
+    var n = t.closest('.nt');
+    return n && !(st.hide === 2 && !r.classList.contains('rv-en')) ? n : null;
+  }
+  list.addEventListener('pointerdown', function (e) {
+    if (e.button > 0) return;
+    clear(); firedAt = 0;
+    var r = e.target.closest('.row'); if (!r) return;
+    pr = r; x0 = e.clientX; y0 = e.clientY;
+    pn = noteTarget(e.target, r);
+    (pn || r).classList.add('press');
+    timer = setTimeout(function () {
+      if (!pr) return;
+      firedAt = performance.now(); var i = +pr.dataset.i; clear();
+      toggleStar(i, true);
+    }, 450);
+  });
+  list.addEventListener('pointermove', function (e) {
+    if (pr && (Math.abs(e.clientX - x0) > 8 || Math.abs(e.clientY - y0) > 8)) clear();
+  });
+  list.addEventListener('pointercancel', clear);
+  list.addEventListener('pointerup', clear);
+  list.addEventListener('pointerleave', clear);
+  function activate(t) {
+    var r = t.closest('.row'); if (!r) return;
+    var i = +r.dataset.i;
+    if (t.closest('.st') && r.classList.contains('on')) { toggleStar(i, true); return; }
+    if (t.closest('.ts')) { dismissCoach(); if (failed) return; gotoSentence(i, true); return; }
+    var nt = noteTarget(t, r);
+    if (nt) { dismissCoach(); openNote(i, +nt.dataset.n); return; }
+    var en = t.closest('.en'), ko = t.closest('.ko');
+    if (en && st.hide === 2 && !r.classList.contains('rv-en')) { reveal(i, 'en'); return; }
+    if (ko && st.hide === 1 && !r.classList.contains('rv-ko')) { reveal(i, 'ko'); return; }
+    dismissCoach();
+    if (failed) { toast('영상이 없어 재생할 수 없어요'); return; }
+    cancelShadow(false);
+    gotoSentence(i, true);
+    return true;
+  }
+  // A row tap starts the follow-scroll (380 ms): the second tap of a double-tap would land on whatever row has slid under the
+  // finger by then (the next sentence). A tap at the same spot right after a row tap that played a sentence is the same intent.
+  var lastPlay = { t: -1e9, x: 0, y: 0 };
+  list.addEventListener('click', function (e) {
+    if (firedAt) { firedAt = 0; return; }  // the release of a long-press (star) is not a tap
+    if (openSheet) return;
+    var now = performance.now();
+    if (now - lastPlay.t < 500 && Math.abs(e.clientX - lastPlay.x) < 30 && Math.abs(e.clientY - lastPlay.y) < 30) return;
+    if (activate(e.target)) lastPlay = { t: now, x: e.clientX, y: e.clientY };
+  });
+  // Key expressions are tab stops only for keyboard users. A focusable chunk is a touch-adjustment target: Chrome would snap a
+  // finger tap on a neighbouring plain word onto it (opening the note instead of playing the sentence).
+  var ntTab = false;
+  function setNtTab(on) {
+    if (on === ntTab) return; ntTab = on;
+    list.querySelectorAll('.nt').forEach(function (n) { if (on) n.tabIndex = 0; else if (n !== document.activeElement) n.removeAttribute('tabindex'); });
+  }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Tab') setNtTab(true); }, true);  // before the browser moves focus
+  document.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') setNtTab(false); }, true);
+  list.addEventListener('focusout', function (e) { if (!ntTab && e.target.classList && e.target.classList.contains('nt')) e.target.removeAttribute('tabindex'); });
+  // Enter / Space on a focused chunk opens the note
+  list.addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('nt')) {
+      e.preventDefault(); e.stopPropagation(); activate(e.target);
+    }
+  });
+  list.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+})();
+
+// ---------- star ----------
+function toggleStar(i, haptic) {
+  if (i < 0 || i >= N) return;
+  var on = !st.stars.has(i);
+  if (on) st.stars.add(i); else st.stars.delete(i);
+  rows[i].classList.toggle('star', on);
+  if (on) restart(rows[i].querySelector('.st'), 'pop');
+  if (haptic && navigator.vibrate) try { navigator.vibrate(8); } catch (e) {}
+  toast(on ? '별표 저장' : '별표 해제');
+  renderTicks(); save();
+}
+
+// ---------- loop ----------
+var loopI = -1;
+function setLoop(on, i) {
+  if (loopI >= 0) rows[loopI].classList.remove('loop');
+  if (on) {
+    loopI = i;
+    rows[i].classList.add('loop');
+  } else loopI = -1;
+  $('cLoop').setAttribute('aria-pressed', on);
+  relayout();
+}
+function toggleLoop() {
+  if (!N) return;
+  if (loopI >= 0) { setLoop(false); return; }
+  if (ai >= 0) setLoop(true, ai);
+  else { var i = Math.max(0, bs(S, video.currentTime || 0) + 1); setLoop(true, i); gotoSentence(i, !video.paused); }
+}
+$('cLoop').addEventListener('click', toggleLoop);
+
+// ---------- play modes: 연속 재생 (cont) / 한 문장씩 멈춤 (stop) / 따라 말하기 (shadow); 한 문장 반복 is orthogonal ----------
+var MODE_LBL = { cont: '연속 재생', stop: '한 문장씩', shadow: '따라 말하기' };
+var MODE_FULL = { cont: '연속 재생', stop: '한 문장씩 멈춤', shadow: '따라 말하기' };
+var waiting = false, waitI = -1, waitTimer = 0, numTimer = 0;
+var held = false, heldI = -1, heldAt = -1, clip = null, EPS = 0.012;
+var sayEl = document.createElement('span'); sayEl.className = 'say';
+sayEl.innerHTML = '<svg class="i" viewBox="0 0 24 24"><use href="#ic-mic"/></svg>따라 말해보세요<span class="num"></span>';
+var holdEl = document.createElement('span'); holdEl.className = 'hold';
+holdEl.innerHTML = '멈춤 · <b>다음 ▸</b>';
+var cdBar = document.createElement('div'); cdBar.id = 'cdBar';
+function shadowEligible(i) { return i >= 0 && WS[i].length >= 3 && E[i] - S[i] >= 0.8; }
+function setMode(m, quiet) {
+  var was = st.mode; st.mode = m;
+  var c = $('cMode');
+  c.classList.toggle('on', m !== 'cont');
+  c.querySelectorAll('.dc svg').forEach(function (x) { x.classList.toggle('sel', x.dataset.m === m); });
+  $('modeLbl').textContent = MODE_LBL[m];
+  c.setAttribute('aria-label', '재생 방식: ' + MODE_FULL[m]);
+  document.querySelectorAll('.modes button').forEach(function (b) { b.setAttribute('aria-checked', b.dataset.v === m); });
+  if (was === 'shadow' && m !== 'shadow' && waiting) { cancelShadow(); play(); }
+  if (m !== 'stop' && held) clearHold();
+  if (!quiet) savePrefs();
+}
+$('cMode').addEventListener('click', function () { showSheet('shMode'); });
+document.querySelector('.modes').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  setMode(b.dataset.v); setTimeout(function () { closeSheet(false, $('shMode')); }, 160);
+});
+// 한 문장씩 멈춤: stop exactly at the sentence end (rAF-checked), keep the last word shown, wait for 다음/▶
+function hold(i) {
+  held = true; heldI = i;
+  video.pause();
+  var e = E[i] - 0.01;
+  if ((video.currentTime || 0) > e) video.currentTime = e;
+  heldAt = video.currentTime; lastT = heldAt;
+  rows[i].classList.add('held'); rows[i].querySelector('.mr').insertBefore(holdEl, rows[i].querySelector('.st'));
+  $('bNext').classList.add('cue'); $('bNext').setAttribute('aria-label', '다음 문장 재생');
+  setPlayIcon(); updChrome();
+}
+function clearHold() {
+  if (!held) return;
+  if (heldI >= 0) rows[heldI].classList.remove('held');
+  held = false; heldI = -1; holdEl.remove();
+  $('bNext').classList.remove('cue'); $('bNext').setAttribute('aria-label', '다음 문장');
+  setPlayIcon(); updChrome();
+}
+function advanceFromHold() {
+  var i = heldI; clearHold();
+  if (loopI >= 0) gotoSentence(loopI, true);
+  else if (i + 1 < N) gotoSentence(i + 1, true);
+  else play();
+}
+// "이 부분 듣기": play exactly [start of word a, end of word b] of sentence i, then pause (rAF-precise)
+function playClip(i, a, b) {
+  if (failed) { toast('영상이 없어 재생할 수 없어요'); return; }
+  var t0 = Math.max(0, WS[i][a] - 0.06);
+  pinI = i; seekTo(t0, false); resumeFollow(false);
+  clip = { i: i, end: WE[i][b] };
+  play();
+}
+function endClip() {
+  var e = clip.end - 0.01; clip = null;
+  video.pause();
+  if ((video.currentTime || 0) > e) video.currentTime = e;
+  lastT = video.currentTime;
+}
+function startWait(i) {
+  waiting = true; waitI = i;
+  video.pause();
+  resync(video.currentTime);
+  var W = Math.max(1.5, (E[i] - S[i]) * 1.1 / st.speed);
+  var r = rows[i], num = sayEl.querySelector('.num');
+  r.classList.add('wait'); r.querySelector('.mr').insertBefore(sayEl, r.querySelector('.st'));
+  cdBar.style.setProperty('--w', W + 's'); r.appendChild(cdBar); restart(cdBar, 'x');
+  var ring = bPlay.querySelector('svg.cd');
+  ring.style.setProperty('--w', W + 's'); restart(ring, 'run');
+  dock.classList.add('waiting'); $('bPrev').setAttribute('aria-label', '다시 듣기');
+  setPlayIcon(); updChrome();
+  var left = Math.ceil(W); num.textContent = ' · ' + left;
+  clearInterval(numTimer);
+  numTimer = setInterval(function () { left--; if (left > 0) num.textContent = ' · ' + left; }, W * 1000 / Math.ceil(W));
+  clearTimeout(waitTimer);
+  waitTimer = setTimeout(shadowContinue, W * 1000);
+}
+function cancelShadow() {
+  if (!waiting) return;
+  if (waitI >= 0) rows[waitI].classList.remove('wait');
+  waiting = false; waitI = -1; lo = 1; hi = 0; waitFrozen = false;
+  clearTimeout(waitTimer); clearInterval(numTimer);
+  sayEl.remove(); cdBar.remove(); bPlay.querySelector('svg.cd').classList.remove('run');
+  dock.classList.remove('waiting'); $('bPrev').setAttribute('aria-label', '이전 문장');
+  setPlayIcon(); updChrome();
+}
+function shadowContinue() {
+  var i = waitI; cancelShadow();
+  if (loopI >= 0) { pinI = loopI; seekTo(winStart(loopI), false); }
+  else if (i >= 0 && i + 1 < N) { pinI = i + 1; seekTo(winStart(i + 1), false); }
+  play();
+}
+
+// ---------- hide modes (segment state is the confirmation; no toasts) ----------
+var revealed = [];
+function reveal(i, which) {
+  var c = which === 'en' ? 'rv-en' : 'rv-ko';
+  if (rows[i].classList.contains(c)) return;
+  rows[i].classList.add(c); revealed.push([i, c]);
+}
+function setHide(m) {
+  st.hide = m;
+  for (var j = 0; j < revealed.length; j++) rows[revealed[j][0]].classList.remove(revealed[j][1]);
+  revealed = [];
+  list.classList.toggle('hide-ko', m === 1); list.classList.toggle('hide-en', m === 2);
+  $('segHide').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-checked', +b.dataset.v === m); });
+  // in listen-first mode, the sentence already finished stays revealed
+  if (m === 2 && ai >= 0 && wSp === WSPAN[ai].length && wSp > 0) reveal(ai, 'en');
+  relayout();
+  save();
+}
+$('segHide').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) setHide(+b.dataset.v); });
+
+// ---------- sheets ----------
+var openSheet = null, lastFocus = null, kbd = false, kbdOpen = false, sheetAt = 0, scrimDown = 0, popIgnore = 0;
+document.addEventListener('keydown', function () { kbd = true; }, true);
+document.addEventListener('pointerdown', function () { kbd = false; }, true);
+function sheetEntry() { return !!(history.state && history.state.sheet); }
+// a reload keeps history.state: a stale sheet entry would make the next Android back do nothing visible
+if (sheetEntry()) { try { history.replaceState(null, ''); } catch (e) {} }
+function fitSheet(sh) { sh.classList.toggle('fit', sh.scrollHeight <= sh.clientHeight + 1); }
+function showSheet(id) {
+  var swap = !!openSheet;  // sheet -> sheet (e.g. 보기 설정 -> 내 표현 -> note) reuses the same history entry
+  if (swap) openSheet.classList.remove('show');
+  else { lastFocus = document.activeElement; kbdOpen = kbd; sheetAt = performance.now(); }
+  var sh = $(id); openSheet = sh;
+  sh.style.removeProperty('--dy'); sh.classList.remove('dragging'); sh.scrollTop = 0;
+  $('scrim').classList.add('show'); sh.classList.add('show');
+  sh.classList.remove('fit'); fitSheet(sh);
+  // one history entry per open sheet (Android back closes it). While a close's history.back() is still in flight,
+  // the popstate handler re-adds the entry instead (pushing now would be undone by that back).
+  if (!swap && !popIgnore && !sheetEntry()) { try { history.pushState({ sheet: 1 }, ''); } catch (e) {} }
+  var f = kbdOpen ? (sh.querySelector('[aria-checked="true"]') || sh.querySelector('button:not([hidden])')) : sh;
+  setTimeout(function () { if (f && openSheet === sh) f.focus({ preventScroll: true }); }, 30);
+}
+function closeSheet(fromPop, only) {
+  if (!openSheet || (only && openSheet !== only)) return;
+  openSheet.classList.remove('show', 'dragging'); openSheet.style.removeProperty('--dy'); $('scrim').classList.remove('show');
+  openSheet = null;
+  if (!fromPop && sheetEntry()) { try { popIgnore++; history.back(); } catch (e) { popIgnore = 0; } }
+  // restore focus only for keyboard users (a touch-opened sheet must not leave a ring on its opener)
+  if (kbdOpen && lastFocus && lastFocus.focus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
+  else if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  if (swNew) setTimeout(function () { if (!openSheet) offerUpdate(); }, 400);
+}
+window.addEventListener('popstate', function () {
+  if (popIgnore) {  // our own history.back() from closeSheet
+    popIgnore--;
+    if (openSheet && !popIgnore && !sheetEntry()) { try { history.pushState({ sheet: 1 }, ''); } catch (e) {} }
+    return;
+  }
+  if (openSheet) closeSheet(true);
+});
+// the scrim closes only on a tap that started on it after the sheet was up (never on the ghost click of the opening tap)
+$('scrim').addEventListener('pointerdown', function () { scrimDown = performance.now(); });
+$('scrim').addEventListener('click', function () {
+  var ok = scrimDown > sheetAt + 350 && performance.now() - scrimDown < 1500;
+  scrimDown = 0;
+  if (ok) closeSheet(false);
+});
+window.addEventListener('resize', function () { if (openSheet) { openSheet.classList.remove('fit'); fitSheet(openSheet); } });
+document.querySelectorAll('.sheet').forEach(function (sh) {
+  var y0 = 0, dy = 0, drag = false, id = -1;
+  sh.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('button')) return;
+    if (!sh.classList.contains('fit') && !e.target.closest('.handle, h2')) return;  // tall sheets scroll; drag from the top
+    drag = true; id = e.pointerId; y0 = e.clientY; dy = 0; sh.setPointerCapture(id); sh.classList.add('dragging'); });
+  sh.addEventListener('pointermove', function (e) { if (!drag) return; dy = Math.max(0, e.clientY - y0); sh.style.setProperty('--dy', dy + 'px'); });
+  function up() { if (!drag) return; drag = false; sh.classList.remove('dragging'); if (dy > 60) closeSheet(false); else sh.style.removeProperty('--dy'); }
+  sh.addEventListener('pointerup', up); sh.addEventListener('pointercancel', up);
+  sh.addEventListener('keydown', function (e) {
+    if (e.key !== 'Tab') return;
+    var f = Array.prototype.filter.call(sh.querySelectorAll('button'), function (b) { return !b.hidden; }), first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === sh)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+});
+// speed
+var speedsEl = document.querySelector('.speeds');
+speedsEl.innerHTML = SPEEDS.map(function (v) { return '<button type="button" role="radio" data-v="' + v + '">' + v + '×</button>'; }).join('');
+function setSpeed(v) {
+  st.speed = v; video.playbackRate = v;
+  $('speedLbl').textContent = v + '×';
+  var c = $('cSpeed'); c.classList.toggle('on', v !== 1); c.setAttribute('aria-label', '재생 속도 ' + v + '배');
+  speedsEl.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-checked', +b.dataset.v === v); });
+  save();
+}
+speedsEl.addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  setSpeed(+b.dataset.v); setTimeout(function () { closeSheet(false, $('shSpeed')); }, 160);
+});
+$('cSpeed').addEventListener('click', function () { showSheet('shSpeed'); });
+// display
+var mqDark = matchMedia('(prefers-color-scheme: dark)'), themeMeta = document.querySelector('meta[name="theme-color"]');
+function applyTheme() {
+  var dark = st.theme === 'dark' || (st.theme === 'system' && mqDark.matches);
+  root.classList.toggle('dark', dark);
+  themeMeta.setAttribute('content', dark ? '#1C1A17' : '#F7F3EC');
+  $('segTheme').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-checked', b.dataset.v === st.theme); });
+}
+function applyFont() {
+  root.dataset.size = st.font;
+  $('segFont').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-checked', b.dataset.v === st.font); });
+}
+// burned-in caption band: keep the top BAND of the frame (faces stay, the video's own karaoke captions go)
+function applyCrop() {
+  var w = D.w || 16, h = D.h || 9, on = !!BAND && st.crop;
+  vbox.classList.toggle('crop', on);
+  root.style.setProperty('--ar', on ? w + '/' + (h * BAND).toFixed(3) : w + '/' + h);
+  root.style.setProperty('--arn', (on ? w / (h * BAND) : w / h).toFixed(4));
+  $('swCrop').hidden = !BAND; $('swCrop').setAttribute('aria-checked', on);
+  relayout();
+}
+mqDark.addEventListener && mqDark.addEventListener('change', applyTheme);
+$('segFont').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; st.font = b.dataset.v; applyFont(); relayout(); savePrefs(); });
+$('segTheme').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; st.theme = b.dataset.v; applyTheme(); savePrefs(); });
+$('swCrop').addEventListener('click', function () { st.crop = !st.crop; applyCrop(); save(); });
+$('bAa').addEventListener('click', function (e) { e.stopPropagation(); showSheet('shAa'); });
+
+// ---------- key expressions (핵심 표현) ----------
+var TYPE_KO = { phrasal: '구동사', idiom: '관용 표현', collocation: '단어 짝꿍', discourse: '말하기 표현', vocab: '어휘', term: '용어' };
+var noteCur = null;
+function noteOf(k) { var m = /^(\d+):(\d)$/.exec(String(k)), i = m ? +m[1] : -1, j = m ? +m[2] : -1; return (isIdx(i) && NOTES[i][j]) ? { i: i, j: j, n: NOTES[i][j] } : null; }
+function chunkText(i, n) { return n.text || Array.prototype.map.call(WSPAN[i], function (x) { return x.textContent; }).slice(n.a, n.b + 1).join(' '); }
+function setSec(id, txt) { var el = $(id); el.hidden = !txt; if (txt) el.querySelector('p').textContent = txt; }
+function openNote(i, j) {
+  var n = NOTES[i] && NOTES[i][j]; if (!n) return;
+  if (waiting) cancelShadow();
+  if (!video.paused) video.pause();
+  clip = null; noteCur = [i, j];
+  $('nType').textContent = TYPE_KO[n.type] || '표현';
+  $('nWhere').textContent = fmt(S[i]) + (SENT[i].spk ? ' · ' + spkName(SENT[i].spk) : '');
+  $('nChunk').textContent = chunkText(i, n);
+  $('nKo').textContent = n.ko || '';
+  setSec('nNu', n.nuance); setSec('nUse', n.use);
+  $('nEx').hidden = !n.ex;
+  if (n.ex) { $('nEx').querySelector('.e').textContent = n.ex; $('nEx').querySelector('.k').textContent = n.ex_ko || ''; }
+  var ww = SENT[i].w || [], h = [];
+  for (var k = 0; k < ww.length; k++) h.push((k === n.a ? '<mark>' : '') + esc(ww[k][0]) + (k === n.b ? '</mark>' : ''));
+  $('nSrc').innerHTML = h.join(' ');
+  updSaveBtn();
+  showSheet('shNote');
+}
+function updSaveBtn() {
+  if (!noteCur) return;
+  var on = st.mine.indexOf(noteCur[0] + ':' + noteCur[1]) >= 0, b = $('nSave');
+  b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
+  b.querySelector('span').textContent = on ? '저장됨' : '내 표현에 저장';
+}
+function markSaved() {
+  list.querySelectorAll('.nt.sv').forEach(function (x) { x.classList.remove('sv'); });
+  st.mine.forEach(function (k) { var o = noteOf(k); if (o) { var el = rows[o.i].querySelector('.nt[data-n="' + o.j + '"]'); if (el) el.classList.add('sv'); } });
+  $('mineCnt').textContent = st.mine.length;
+}
+st.mine = (function (seen) { return st.mine.filter(function (k) { if (seen[k] || !noteOf(k)) return false; seen[k] = 1; return true; }); })(Object.create(null));
+$('nPlay').addEventListener('click', function () { if (noteCur) { var n = NOTES[noteCur[0]][noteCur[1]]; playClip(noteCur[0], n.a, n.b); } });
+$('nFrom').addEventListener('click', function () { if (!noteCur) return; var i = noteCur[0]; closeSheet(false); gotoSentence(i, true); });
+$('nSave').addEventListener('click', function () {
+  if (!noteCur) return;
+  var k = noteCur[0] + ':' + noteCur[1], x = st.mine.indexOf(k), on = x < 0;
+  if (on) st.mine.unshift(k); else st.mine.splice(x, 1);
+  if (on && navigator.vibrate) try { navigator.vibrate(8); } catch (e) {}
+  updSaveBtn(); markSaved(); save();
+});
+function renderMine() {
+  var h = st.mine.map(function (k) {
+    var o = noteOf(k); if (!o) return '';
+    var sp = SENT[o.i].spk ? ' · ' + esc(spkName(SENT[o.i].spk)) : '';
+    return '<button type="button" class="mi" data-k="' + k + '"><div class="c" lang="en">' + esc(chunkText(o.i, o.n)) + '</div><div class="k">' + esc(o.n.ko || '') +
+      '</div><div class="m">' + fmt(S[o.i]) + sp + ' · ' + esc(TYPE_KO[o.n.type] || '표현') + '</div></button>';
+  }).join('');
+  var total = NOTES.reduce(function (a, x) { return a + x.length; }, 0);
+  $('mineList').innerHTML = h || '<div class="mempty">' + (total ? '스크립트의 <b>점선 밑줄</b> 표현을 누르고<br>☆ 내 표현에 저장하면 여기에 모여요' : '이 영상에는 핵심 표현이 아직 없어요') + '</div>';
+}
+$('rMine').addEventListener('click', function () { renderMine(); showSheet('shMine'); });
+$('mineList').addEventListener('click', function (e) {
+  var b = e.target.closest('.mi'); if (!b) return;
+  var o = noteOf(b.dataset.k); if (!o) return;
+  if (!video.paused) video.pause();
+  gotoSentence(o.i, false);
+  openNote(o.i, o.j);
+});
+
+// ---------- installable web app (shared manifest + service worker at the site root) ----------
+// publish.py fills the <!--__PWA__--> slot with ../manifest + ../icons links when it copies the page into the site.
+// No manifest link (a single local folder, file://) -> no service worker, no install UI, no 404 noise.
+var SITE = /^https?:$/.test(location.protocol) && !!document.querySelector('link[rel="manifest"]');
+var mqStandalone = matchMedia('(display-mode: standalone)');
+var standalone = mqStandalone.matches || navigator.standalone === true, installed = false, deferredPrompt = null;
+// Updates: sw.js changes on every publish; the new worker activates at once (skipWaiting + claim) -> controllerchange.
+// The page then offers a reload (toast) and never reloads by itself mid-playback / with a sheet open / twice in a row.
+var swReg = null, swNew = false, swChecked = 0;
+if (SITE) {
+  app.classList.add('site');
+  if ('serviceWorker' in navigator) {
+    var swHad = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.register('../sw.js', { scope: '../' }).then(function (r) { swReg = r; swChecked = performance.now(); }).catch(function () {});
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (!swHad) { swHad = true; cacheSelf(); return; }  // first install, not an update
+      swNew = true; offerUpdate();
+    });
+  }
+}
+// the first visit is loaded before the worker controls the page: put this page into the offline cache explicitly
+function cacheSelf() { try { fetch(location.href, { headers: { Accept: 'text/html' }, credentials: 'same-origin' }).catch(function () {}); } catch (e) {} }
+function swCheck() {
+  if (swReg && performance.now() - swChecked > 5000) { swChecked = performance.now(); swReg.update().catch(function () {}); }
+  if (swNew && !document.hidden) offerUpdate(true);
+}
+function idle() { return video.paused && !openSheet && !waiting && !held && !scrubbing && !clip && !wantPlay; }
+function swReload() {
+  try { sessionStorage.setItem('ks:swr', Date.now()); } catch (e) {}
+  save(); location.reload();
+}
+function offerUpdate(back) {
+  if (!swNew) return;
+  var last = 0; try { last = +sessionStorage.getItem('ks:swr') || 0; } catch (e) {}
+  // returning to an idle app: reload quietly (state + position are saved); never twice within a minute
+  if (back && idle() && Date.now() - last > 60000) { swReload(); return; }
+  if (openSheet) return;  // offered again when the sheet closes
+  toast('새 버전이 있어요', '새로고침', swReload, 10000);
+}
+function updInstall() { $('rInstall').hidden = !SITE || standalone || installed; }
+window.addEventListener('beforeinstallprompt', function (e) {
+  e.preventDefault(); deferredPrompt = e; updInstall();
+  // one quiet first-visit hint, ever (app-wide), never over a sheet or another toast
+  if (SITE && !st.instHinted && !standalone) setTimeout(function () {
+    if (st.instHinted || !deferredPrompt || openSheet || toastEl.classList.contains('show')) return;
+    st.instHinted = true; savePrefs();
+    toast('홈 화면에 앱으로 설치할 수 있어요', '설치', doInstall);
+  }, 6000);
+});
+window.addEventListener('appinstalled', function () { installed = true; deferredPrompt = null; updInstall(); });
+mqStandalone.addEventListener && mqStandalone.addEventListener('change', function (e) { standalone = e.matches; updInstall(); });
+function doInstall() {
+  if (deferredPrompt) {
+    var p = deferredPrompt; deferredPrompt = null;
+    if (openSheet) closeSheet(false);
+    p.prompt(); if (p.userChoice) p.userChoice.then(function (r) { if (r && r.outcome === 'accepted') { installed = true; updInstall(); } }).catch(function () {});
+    return;
+  }
+  var ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var I = function (id) { return '<svg class="i" viewBox="0 0 24 24"><use href="#' + id + '"/></svg>'; };
+  $('instSteps').innerHTML = ios
+    ? '<li>Safari 아래쪽의 <b>공유</b> ' + I('ic-share') + ' 버튼을 눌러요</li><li><b>홈 화면에 추가</b>를 골라요</li><li>오른쪽 위 <b>추가</b>를 누르면 끝!</li>'
+    : /SamsungBrowser/.test(ua)
+    ? '<li>아래쪽 <b>메뉴</b> ' + I('ic-menu') + ' 를 눌러요</li><li><b>현재 페이지 추가</b> → <b>홈 화면</b>을 골라요</li><li><b>추가</b>를 누르면 끝!</li>'
+    : '<li>오른쪽 위 <b>메뉴 ⋮</b> 를 눌러요</li><li><b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 골라요</li><li><b>설치</b>를 누르면 끝!</li>';
+  showSheet('shInstall');
+}
+$('rInstall').addEventListener('click', doInstall);
+
+// ---------- relayout (font/hide/badge change, resize) ----------
+var relayoutQueued = false;
+function relayout() {
+  if (relayoutQueued) return; relayoutQueued = true;
+  requestAnimationFrame(function () {
+    relayoutQueued = false; measure();
+    // a running scroll tween aims at pre-resize coordinates (rotation, font change): re-anchor instead of letting it finish
+    if (follow) { cancelTween(); scrollToActive(true); } else checkPill();
+  });
+}
+if (window.ResizeObserver) new ResizeObserver(function () { relayout(); }).observe(list);
+else window.addEventListener('resize', relayout);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+
+// ---------- main loop ----------
+var raf = 0;
+function startLoop() { if (!raf) raf = requestAnimationFrame(frame); }
+function frame() {
+  raf = 0;
+  tick(false);
+  if (!video.paused && !video.ended) raf = requestAnimationFrame(frame);
+}
+function tick(force) {
+  if (scrubbing) return;
+  var t = video.currentTime || 0;
+  if (!video.paused && !waiting) {
+    // "이 부분 듣기" clip end
+    if (clip) { if (t >= clip.end - EPS) { endClip(); return; } }
+    // 한 문장씩 멈춤: pause the moment playback reaches the active sentence's end
+    else if (st.mode === 'stop' && ai >= 0 && lastT < E[ai] - EPS && t >= E[ai] - EPS && t - lastT < 1) { hold(ai); return; }
+    // shadowing: pause once playback crosses the active sentence's window end
+    else if (st.mode === 'shadow' && ai >= 0 && shadowEligible(ai)) {
+      var we = winEnd(ai);
+      if (lastT < we && t >= we && t - lastT < 1) { lastT = t; startWait(ai); return; }
+    }
+    if (!clip && loopI >= 0 && t >= winEnd(loopI)) {
+      t = winStart(loopI); pinI = loopI; video.currentTime = t; lastT = t; resync(t);
+    }
+  }
+  var natural = t >= lastT && t - lastT < 1;
+  lastT = t;
+  if (force) resync(t); else sync(t, natural);
+  drawSeek(t, force);
+  var now = performance.now();
+  if (!video.paused) {
+    if (!st.hinted) { if (lastFrameAt) playAcc += Math.min(100, now - lastFrameAt); lastFrameAt = now; if (playAcc > 8000) showCoach(); }
+    if (!follow && !fingerOnList && now - lastListTouch > 8000) resumeFollow(false);
+    if (now - lastSave > 5000) save();
+  }
+}
+
+// ---------- keyboard ----------
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === 'Escape' && openSheet) { closeSheet(false); return; }
+  if (openSheet) return;
+  var tag = e.target.tagName;
+  if (e.key === ' ' && tag !== 'BUTTON') { e.preventDefault(); togglePlay(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+  else if (e.key === 'l' || e.key === 'L') toggleLoop();
+  else if (e.key === 's' || e.key === 'S') setMode(st.mode === 'shadow' ? 'cont' : 'shadow');
+  else if (e.key === 'm' || e.key === 'M') setMode(st.mode === 'cont' ? 'stop' : st.mode === 'stop' ? 'shadow' : 'cont');
+});
+
+// ---------- lifecycle ----------
+// backgrounded during a shadowing wait: freeze the countdown (it must not start playback while the app is hidden);
+// back in front: run the full wait again. rAF does not run while hidden, so timeupdate keeps the stop/shadow/loop checks alive.
+var waitFrozen = false;
+document.addEventListener('visibilitychange', function () {
+  if (document.hidden) {
+    save();
+    if (waiting) { clearTimeout(waitTimer); clearInterval(numTimer); waitFrozen = true; }
+  } else {
+    if (waiting && waitFrozen) { waitFrozen = false; startWait(waitI); }
+    swCheck();
+  }
+});
+window.addEventListener('pagehide', save);
+video.addEventListener('timeupdate', function () { if (document.hidden && !video.paused) tick(false); });
+$('pick').addEventListener('click', function (e) { e.stopPropagation(); $('file').click(); });
+$('retry').addEventListener('click', function (e) { e.stopPropagation(); retryVideo(); });
+$('file').addEventListener('change', function () {
+  var f = this.files && this.files[0]; if (!f) return;
+  loadVideo(URL.createObjectURL(f), true);
+});
+
+// ---------- boot ----------
+applyTheme(); applyFont(); applyCrop(); setSpeed(st.speed); setHide(st.hide); setMode(st.mode, true); markSaved(); updInstall(); setDur(D.duration || 0);
+var pendingResume = (saved.t > 10 && saved.t < (D.duration || Infinity) - 10) ? saved.t : 0;
+measure();
+if (pendingResume) { resync(pendingResume); drawSeek(pendingResume, true); scrollToActive(true); }
+else { resync(0); if (N) rows[0].classList.toggle('pre', ai < 0); }
+loadVideo(D.video || 'video.mp4');
+savePrefs();  // writes both stores back validated (repairs anything corrupt)
+
+window.__karaoke = Object.freeze({
+  data: D,
+  state: function () {
+    var r = ai >= 0 ? rows[ai] : null, c = r ? r.querySelector('.w.cur') : null;
+    return { t: video.currentTime || 0, sentence: ai, word: wCur, wordText: c ? c.textContent : '', rowEl: r,
+      follow: follow, loop: loopI, mode: st.mode, shadow: st.mode === 'shadow', waiting: waiting || held,
+      wait: waiting ? 'shadow' : held ? 'stop' : null, held: held ? heldI : -1, heldAt: held ? heldAt : -1, clip: !!clip,
+      hide: st.hide, speed: st.speed, mine: st.mine.slice() };
+  },
+  seek: function (t) { seekTo(+t || 0, true); }
+});
+})();
+</script>
+</body>
+</html>
