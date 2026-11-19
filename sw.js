@@ -3,7 +3,7 @@
 // - HTML pages: network-first, falling back to the cache (offline reading of scripts already opened)
 // - NEVER touches video/audio or any Range request: those go straight to the network so seeking keeps working
 // VERSION is stamped by pipeline/publish.py on every publish; old caches are deleted on activate.
-const VERSION = '20261119070332';
+const VERSION = '20261120061552';
 const CACHE = 'ks-' + VERSION;
 const SHELL = ['./', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png',
   './icons/apple-touch-icon.png', './icons/favicon-32.png'];
